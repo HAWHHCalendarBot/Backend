@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace Downloader
+namespace CalendarBackendLib
 {
-    internal class EventEntry
+    public class EventEntry
     {
         public readonly string Name;
         public readonly string Location;

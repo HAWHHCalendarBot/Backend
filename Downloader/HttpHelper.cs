@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace Downloader
 {
-    internal static class Extensions
+    internal static class HttpHelper
     {
         private static HttpClient GetHttpClient(string productName = "HAWHHCalendarBot", string productVersion = "1.0")
         {
@@ -35,11 +35,6 @@ namespace Downloader
 
                 return content;
             }
-        }
-
-        public static async Task<TResult[]> WhenAll<TResult>(this IEnumerable<Task<TResult>> tasks)
-        {
-            return await Task.WhenAll(tasks);
         }
     }
 }
