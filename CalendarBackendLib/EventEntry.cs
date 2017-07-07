@@ -7,12 +7,16 @@ namespace CalendarBackendLib
 {
     public class EventEntry
     {
-        public readonly string Name;
-        public readonly string Location;
-        public readonly string Description;
-        public readonly DateTime StartTime;
-        public readonly DateTime EndTime;
+        public string Name { get; set; }
+        public string Location { get; set; }
+        public string Description { get; set; }
+        public DateTime StartTime { get; set; }
+        public DateTime EndTime { get; set; }
         public TimeSpan Duration => EndTime - StartTime;
+
+        [Obsolete("Use parameterized Constructor")]
+        public EventEntry()
+        { }
 
         public EventEntry(string name, DateTime startTime, DateTime endTime, string location = "", string description = "")
         {
@@ -48,6 +52,16 @@ namespace CalendarBackendLib
 
             var asText = string.Join("\n", content.Select(o => o.Key + ":" + o.Value));
             return asText;
+        }
+
+        public string GenerateJson()
+        {
+            return JsonHelper.ConvertObjectToJSon(this);
+        }
+
+        public static EventEntry FromJson(string jsonString)
+        {
+            return JsonHelper.ConvertJSonToObject<EventEntry>(jsonString);
         }
 
 

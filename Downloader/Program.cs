@@ -1,6 +1,7 @@
 ﻿using CalendarBackendLib;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Text;
@@ -19,6 +20,8 @@ namespace Downloader
         private static readonly Regex ICS_LINK_REGEX = new Regex(@"href=""(\S+\.ics)""");
         private static readonly Encoding HAW_ICS_ENCODING = Encoding.GetEncoding("iso-8859-1");
 
+
+        private static readonly DirectoryInfo EVENT_DIRECTORY = new DirectoryInfo(Environment.CurrentDirectory).CreateSubdirectory("eventjsons");
 
         static void Main(string[] args)
         {
@@ -67,9 +70,10 @@ namespace Downloader
             var eventsByName = events.GroupBy(o => o.Name);
             Log("EventsByName: " + eventsByName.Count());
 
-            var eventNames = eventsByName.Select(o => o.Key).ToArray();
-
-            var test = events.First().GetIcsVEventBlock();
+            Log("Save Events to " + EVENT_DIRECTORY.FullName);
+            var saveTasks = eventsByName.Select(o => SaveEventFile(o.Key, o));
+            await saveTasks.WaitAll();
+            Log("Saved");
         }
 
         private static async Task<Uri[]> GetEventFileUrisFromBaseUriList(IEnumerable<Uri> baseUriList)
@@ -98,5 +102,28 @@ namespace Downloader
             return uris.ToArray();
         }
 
+        private static async Task SaveEventFile(string name, IEnumerable<EventEntry> events)
+        {
+            var eventFile = new FileInfo(EVENT_DIRECTORY.FullName + Path.DirectorySeparatorChar + name + ".json");
+            var content = GenerateFileJSONContent(events);
+
+            if (eventFile.Exists)
+            {
+                var currentContent = await File.ReadAllTextAsync(eventFile.FullName);
+
+                if (currentContent == content)
+                    return;
+            }
+
+            await File.WriteAllTextAsync(eventFile.FullName, content);
+        }
+
+        private static string GenerateFileJSONContent(IEnumerable<EventEntry> events)
+        {
+            var jsonEvents = events.Select(o => o.GenerateJson());
+
+            var jsonString = "[" + string.Join(",", jsonEvents) + "]";
+            return jsonString;
+        }
     }
 }
