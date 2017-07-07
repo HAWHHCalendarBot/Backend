@@ -1,10 +1,11 @@
 FROM microsoft/dotnet:2-sdk
 
-WORKDIR /app
+WORKDIR /app/Downloader
 
-COPY *.csproj ./
+COPY CalendarBackendLib /app/CalendarBackendLib
+COPY Downloader/Downloader.csproj ./
 RUN dotnet restore
 
-COPY . ./
+COPY Downloader/ ./
 RUN dotnet publish -c Release -o out
 ENTRYPOINT ["dotnet", "out/Downloader.dll"]
