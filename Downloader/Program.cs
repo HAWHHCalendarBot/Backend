@@ -75,6 +75,30 @@ namespace Downloader
             var saveTasks = eventsByName.Select(o => SaveEventFile(FILENAME_OF_EVENTNAME(o.Key), o));
             await saveTasks.WaitAll();
             Log("Saved");
+
+            Log("Delete not anymore existing event files...");
+            var fileNamesOfEvents = eventsByName
+                .Select(o => o.Key)
+                .Select(FILENAME_OF_EVENTNAME)
+                .ToArray();
+            var unneeded = EVENT_DIRECTORY.EnumerateFiles("*.json")
+                .Where(o => !fileNamesOfEvents.Contains(o.Name))
+                .ToArray();
+            if (unneeded.Any())
+            {
+                Log("Delete " + unneeded.Length + ": " + string.Join(",", unneeded.Select(o => o.Name)));
+
+                foreach (var item in unneeded)
+                {
+                    item.Delete();
+                }
+
+                Log("Deleted");
+            }
+            else
+            {
+                Log("Nothing to delete");
+            }
         }
 
         private static async Task<Uri[]> GetEventFileUrisFromBaseUriList(IEnumerable<Uri> baseUriList)
