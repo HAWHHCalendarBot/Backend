@@ -32,7 +32,7 @@ namespace CalendarBackendLib
         { }
 
 
-        public string GetIcsVEventBlock()
+        public string GenerateIcsVEventBlock()
         {
             const string icsDateTimeFormat = "yyyyMMddTHHmmss";
 
