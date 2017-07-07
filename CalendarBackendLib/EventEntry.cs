@@ -40,10 +40,11 @@ namespace CalendarBackendLib
             content.Add("BEGIN", "VEVENT");
 
             content.Add("SUMMARY", Name);
-            content.Add("LOCATION", Location);
             content.Add("DTSTART;TZID=Europe/Berlin", StartTime.ToString(icsDateTimeFormat));
             content.Add("DTEND;TZID=Europe/Berlin", EndTime.ToString(icsDateTimeFormat));
 
+            if (!string.IsNullOrWhiteSpace(Location))
+                content.Add("LOCATION", Location);
             if (!string.IsNullOrWhiteSpace(Description))
                 content.Add("DESCRIPTION", Description);
 
