@@ -152,10 +152,7 @@ namespace Downloader
 
         private static string GenerateFileJSONContent(IEnumerable<EventEntry> events)
         {
-            var jsonEvents = events.Select(o => o.GenerateJson());
-
-            var jsonString = "[" + string.Join(",", jsonEvents) + "]";
-            return jsonString;
+            return JsonHelper.ConvertObjectToJSon(events);
         }
     }
 }

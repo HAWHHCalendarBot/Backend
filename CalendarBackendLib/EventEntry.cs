@@ -68,17 +68,6 @@ namespace CalendarBackendLib
             return asText;
         }
 
-        public string GenerateJson()
-        {
-            return JsonHelper.ConvertObjectToJSon(this);
-        }
-
-        public static EventEntry FromJson(string jsonString)
-        {
-            return JsonHelper.ConvertJSonToObject<EventEntry>(jsonString);
-        }
-
-
         public bool Equals(EventEntry other)
         {
             if (other == null)
