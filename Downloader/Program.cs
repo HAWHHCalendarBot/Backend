@@ -22,7 +22,6 @@ namespace Downloader
 
 
         private static readonly DirectoryInfo EVENT_DIRECTORY = new DirectoryInfo(Environment.CurrentDirectory).CreateSubdirectory("eventjsons");
-        private static readonly Func<string, string> FILENAME_OF_EVENTNAME = eventname => eventname.Replace('/', '-') + ".json";
 
         static void Main(string[] args)
         {
@@ -72,7 +71,7 @@ namespace Downloader
             Log("EventsByName: " + eventsByName.Count());
 
             Log("Save Events to " + EVENT_DIRECTORY.FullName);
-            var changedFiles = await eventsByName.Select(o => SaveEventFile(FILENAME_OF_EVENTNAME(o.Key), o)).WhenAll();
+            var changedFiles = await eventsByName.Select(o => SaveEventFile(o)).WhenAll();
             if (changedFiles.CountCreated() > 0)
                 Log("Created " + changedFiles.CountCreated() + ": [" + string.Join(",", changedFiles.OnlyCreated()) + "]");
             if (changedFiles.CountChanged() > 0)
@@ -82,7 +81,7 @@ namespace Downloader
             Log("Delete not anymore existing event files...");
             var fileNamesOfEvents = eventsByName
                 .Select(o => o.Key)
-                .Select(FILENAME_OF_EVENTNAME)
+                .Select(EventEntry.GetFilename)
                 .ToArray();
             var unneeded = EVENT_DIRECTORY.EnumerateFiles("*.json")
                 .Where(o => !fileNamesOfEvents.Contains(o.Name))
@@ -130,8 +129,9 @@ namespace Downloader
             return uris.ToArray();
         }
 
-        private static async Task<ChangedObject> SaveEventFile(string filename, IEnumerable<EventEntry> events)
+        private static async Task<ChangedObject> SaveEventFile(IEnumerable<EventEntry> events)
         {
+            var filename = events.First().Filename;
             var eventFile = new FileInfo(EVENT_DIRECTORY.FullName + Path.DirectorySeparatorChar + filename);
             var content = GenerateFileJSONContent(events);
             ChangeState changeState = ChangeState.Created;

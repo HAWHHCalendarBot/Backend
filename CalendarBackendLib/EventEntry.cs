@@ -12,7 +12,10 @@ namespace CalendarBackendLib
         public string Description { get; set; }
         public DateTime StartTime { get; set; }
         public DateTime EndTime { get; set; }
+
         public TimeSpan Duration => EndTime - StartTime;
+        public string EventNameOnFilesystem => GetEventnameOnFilesystem(Name);
+        public string Filename => GetFilename(Name);
 
         [Obsolete("Use parameterized Constructor")]
         public EventEntry()
@@ -31,6 +34,16 @@ namespace CalendarBackendLib
             : this(name, startTime, startTime + duration, location, description)
         { }
 
+
+        public static string GetEventnameOnFilesystem(string eventname)
+        {
+            return eventname.Replace('/', '-');
+        }
+
+        public static string GetFilename(string eventname)
+        {
+            return GetEventnameOnFilesystem(eventname) + ".json";
+        }
 
         public string GenerateIcsVEventBlock()
         {
