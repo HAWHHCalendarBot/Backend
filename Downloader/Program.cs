@@ -72,9 +72,12 @@ namespace Downloader
             Log("EventsByName: " + eventsByName.Count());
 
             Log("Save Events to " + EVENT_DIRECTORY.FullName);
-            var saveTasks = eventsByName.Select(o => SaveEventFile(FILENAME_OF_EVENTNAME(o.Key), o));
-            await saveTasks.WaitAll();
-            Log("Saved");
+            var changedFiles = await eventsByName.Select(o => SaveEventFile(FILENAME_OF_EVENTNAME(o.Key), o)).WhenAll();
+            if (changedFiles.CountCreated() > 0)
+                Log("Created " + changedFiles.CountCreated() + ": [" + string.Join(",", changedFiles.OnlyCreated()) + "]");
+            if (changedFiles.CountChanged() > 0)
+                Log("Changed " + changedFiles.CountChanged() + ": [" + string.Join(",", changedFiles.OnlyChanged()) + "]");
+            Log("Unchanged " + changedFiles.CountUnchanged());
 
             Log("Delete not anymore existing event files...");
             var fileNamesOfEvents = eventsByName
@@ -86,7 +89,7 @@ namespace Downloader
                 .ToArray();
             if (unneeded.Any())
             {
-                Log("Delete " + unneeded.Length + ": " + string.Join(",", unneeded.Select(o => o.Name)));
+                Log("Delete " + unneeded.Length + ": [" + string.Join(",", unneeded.Select(o => o.Name)) + "]");
 
                 foreach (var item in unneeded)
                 {
@@ -127,20 +130,24 @@ namespace Downloader
             return uris.ToArray();
         }
 
-        private static async Task SaveEventFile(string filename, IEnumerable<EventEntry> events)
+        private static async Task<ChangedObject> SaveEventFile(string filename, IEnumerable<EventEntry> events)
         {
             var eventFile = new FileInfo(EVENT_DIRECTORY.FullName + Path.DirectorySeparatorChar + filename);
             var content = GenerateFileJSONContent(events);
+            ChangeState changeState = ChangeState.Created;
 
             if (eventFile.Exists)
             {
                 var currentContent = await File.ReadAllTextAsync(eventFile.FullName);
 
                 if (currentContent == content)
-                    return;
+                    return new ChangedObject(filename, ChangeState.Unchanged);
+
+                changeState = ChangeState.Changed;
             }
 
             await File.WriteAllTextAsync(eventFile.FullName, content);
+            return new ChangedObject(filename, changeState);
         }
 
         private static string GenerateFileJSONContent(IEnumerable<EventEntry> events)
