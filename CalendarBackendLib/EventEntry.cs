@@ -45,29 +45,6 @@ namespace CalendarBackendLib
             return GetEventnameOnFilesystem(eventname) + ".json";
         }
 
-        public string GenerateIcsVEventBlock()
-        {
-            const string icsDateTimeFormat = "yyyyMMddTHHmmss";
-
-            var content = new Dictionary<string, string>();
-            content.Add("BEGIN", "VEVENT");
-
-            content.Add("SUMMARY", Name);
-            content.Add("DTSTART;TZID=Europe/Berlin", StartTime.ToString(icsDateTimeFormat));
-            content.Add("DTEND;TZID=Europe/Berlin", EndTime.ToString(icsDateTimeFormat));
-
-            if (!string.IsNullOrWhiteSpace(Location))
-                content.Add("LOCATION", Location);
-            if (!string.IsNullOrWhiteSpace(Description))
-                content.Add("DESCRIPTION", Description);
-
-            content.Add("UID", GetHashString() + "@calendarbot.hawhh.de");
-            content.Add("END", "VEVENT");
-
-            var asText = string.Join("\n", content.Select(o => o.Key + ":" + o.Value));
-            return asText;
-        }
-
         public bool Equals(EventEntry other)
         {
             if (other == null)
@@ -93,27 +70,6 @@ namespace CalendarBackendLib
         public override int GetHashCode()
         {
             return StartTime.GetHashCode();
-        }
-
-        public string GetHashString()
-        {
-            var nameHash = Name.GetHashCode().ToString("x");
-
-            var dateHash = StartTime.Date.GetHashCode().ToString("x");
-
-            var startHash = DoubleToHex(StartTime.TimeOfDay.TotalMinutes);
-            var endHash = DoubleToHex(EndTime.TimeOfDay.TotalMinutes);
-
-            var locationHash = Location.GetHashCode().ToString("x");
-            var descriptionHash = Description.GetHashCode().ToString("x");
-
-            return nameHash + dateHash + startHash + endHash + locationHash + descriptionHash;
-        }
-
-        private string DoubleToHex(double value)
-        {
-            var intVal = Convert.ToInt64(value);
-            return intVal.ToString("x");
         }
 
         public override string ToString()
