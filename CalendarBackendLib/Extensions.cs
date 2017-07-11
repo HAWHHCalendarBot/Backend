@@ -17,5 +17,10 @@ namespace CalendarBackendLib
         {
             return Task.WhenAll(tasks);
         }
+
+        public static string ToArrayString<T>(this IEnumerable<T> list, string description)
+        {
+            return description + " " + list.Count() + ": [" + string.Join(";", list) + "]";
+        }
     }
 }

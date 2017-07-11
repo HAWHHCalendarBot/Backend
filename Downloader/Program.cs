@@ -74,9 +74,9 @@ namespace Downloader
             Log("Save Events to " + EVENT_DIRECTORY.FullName);
             var changedFiles = await eventsByName.Select(o => SaveEventFile(o)).WhenAll();
             if (changedFiles.CountCreated() > 0)
-                Log("Created " + changedFiles.CountCreated() + ": [" + string.Join(",", changedFiles.OnlyCreated()) + "]");
+                Log(changedFiles.OnlyCreated().ToArrayString("Created"));
             if (changedFiles.CountChanged() > 0)
-                Log("Changed " + changedFiles.CountChanged() + ": [" + string.Join(",", changedFiles.OnlyChanged()) + "]");
+                Log(changedFiles.OnlyChanged().ToArrayString("Changed"));
             Log("Unchanged " + changedFiles.CountUnchanged());
 
             Log("Delete not anymore existing event files...");
@@ -89,7 +89,7 @@ namespace Downloader
                 .ToArray();
             if (unneeded.Any())
             {
-                Log("Delete " + unneeded.Length + ": [" + string.Join(",", unneeded.Select(o => o.Name)) + "]");
+                Log(unneeded.ToArrayString("Delete"));
 
                 foreach (var item in unneeded)
                 {
