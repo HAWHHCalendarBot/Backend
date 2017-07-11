@@ -19,6 +19,7 @@ namespace Downloader
 
         private static readonly Regex ICS_LINK_REGEX = new Regex(@"href=""(\S+\.ics)""");
         private static readonly Encoding HAW_ICS_ENCODING = Encoding.GetEncoding("iso-8859-1");
+        private const int WAITTIME_BETWEEN_TWO_DOWNLOADS_IN_MINUTES = 100;
 
 
         private static readonly DirectoryInfo EVENT_DIRECTORY = new DirectoryInfo(Environment.CurrentDirectory).CreateSubdirectory("eventjsons");
@@ -41,8 +42,8 @@ namespace Downloader
                     Log(ex.ToString());
                 }
 
-                Log("finished with this one... now wait.");
-                System.Threading.Thread.Sleep(1000 * 60 * 100); // 100 Minuten warten
+                Log("finished with this one... now wait " + WAITTIME_BETWEEN_TWO_DOWNLOADS_IN_MINUTES + " minutes.");
+                System.Threading.Thread.Sleep(1000 * 60 * WAITTIME_BETWEEN_TWO_DOWNLOADS_IN_MINUTES);
             }
         }
 
