@@ -5,7 +5,9 @@ VisualStudioVersion = 15.0.26621.2
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Downloader", "Downloader\Downloader.csproj", "{69A9CDAB-7ED3-43F9-A282-09AD127AD36E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CalendarBackendLib", "CalendarBackendLib\CalendarBackendLib.csproj", "{44D6D28B-DC4E-47FE-A4CE-2D0470734E99}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CalendarBackendLib", "CalendarBackendLib\CalendarBackendLib.csproj", "{44D6D28B-DC4E-47FE-A4CE-2D0470734E99}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Parser", "Parser\Parser.csproj", "{D4464E15-20C7-4135-B64C-0F7DE43450FF}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +23,10 @@ Global
 		{44D6D28B-DC4E-47FE-A4CE-2D0470734E99}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{44D6D28B-DC4E-47FE-A4CE-2D0470734E99}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{44D6D28B-DC4E-47FE-A4CE-2D0470734E99}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D4464E15-20C7-4135-B64C-0F7DE43450FF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D4464E15-20C7-4135-B64C-0F7DE43450FF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D4464E15-20C7-4135-B64C-0F7DE43450FF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D4464E15-20C7-4135-B64C-0F7DE43450FF}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

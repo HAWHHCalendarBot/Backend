@@ -1,0 +1,14 @@
+FROM microsoft/dotnet:2-sdk
+
+WORKDIR /app/Parser
+VOLUME /app/Parser/calendars
+VOLUME /app/Parser/eventjsons
+VOLUME /app/Parser/userconfig
+
+COPY CalendarBackendLib /app/CalendarBackendLib
+COPY Parser/Parser.csproj ./
+RUN dotnet restore
+
+COPY Parser/ ./
+RUN dotnet publish -c Release -o out
+ENTRYPOINT ["dotnet", "out/Parser.dll"]
