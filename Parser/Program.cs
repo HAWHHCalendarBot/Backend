@@ -57,12 +57,7 @@ namespace Parser
             try
             {
                 var userconfigs = await GetAllUserconfigs();
-                var relevantUserconfigs = userconfigs
-                    .Where(o => o.config.events
-                        .Select(EventEntry.GetFilename)
-                        .Contains(eventFile.Name)
-                    )
-                    .ToArray();
+                var relevantUserconfigs = GetUserconfigsThatNeedEventFile(userconfigs, eventFile);
 
                 await GenerateSetOfUserconfigs(relevantUserconfigs);
             }
@@ -70,6 +65,16 @@ namespace Parser
             {
                 Log("Could not generate based on Event File " + eventFile.Name + ": " + ex.Message);
             }
+        }
+
+        private static Userconfig[] GetUserconfigsThatNeedEventFile(Userconfig[] userconfigs, FileInfo eventFile)
+        {
+            return userconfigs
+                .Where(o => o.config.events
+                    .Select(EventEntry.GetFilename)
+                    .Contains(eventFile.Name)
+                )
+                .ToArray();
         }
 
         private static async void UserconfigFileChanged(object sender, FileSystemEventArgs e)
