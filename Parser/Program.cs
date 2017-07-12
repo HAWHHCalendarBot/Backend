@@ -30,12 +30,12 @@ namespace Parser
 
             Log("Generate all Userconfigs...");
             var generateAllTask = GenerateAllUserconfigs();
-            Log("All generated...");
+            Log("All generated");
 
+            Log("Start main loop...");
             while (true)
             {
                 DeleteNotAnymoreNeededCalendars();
-                Log("Now wait for changes...");
                 System.Threading.Thread.Sleep(1000 * 60 * 60); // 1 hour
             }
         }
