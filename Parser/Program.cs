@@ -153,21 +153,11 @@ namespace Parser
         private static async Task<ChangedObject> GenerateCalendar(string name, string filename, params string[] eventnames)
         {
             var events = await LoadEventsByName(eventnames);
-
             var icsContent = IcsGenerator.GenerateIcsContent(name, events);
+            var file = FilesystemHelper.GenerateFileInfo(CALENDAR_DIRECTORY, filename, ".ics");
 
-            var file = new FileInfo(CALENDAR_DIRECTORY.FullName + Path.DirectorySeparatorChar + filename + ".ics");
-
-            if (file.Exists)
-            {
-                var currentFileContent = await File.ReadAllTextAsync(file.FullName);
-                if (currentFileContent == icsContent)
-                    return new ChangedObject(name, ChangeState.Unchanged);
-            }
-
-            var changeState = file.Exists ? ChangeState.Changed : ChangeState.Created;
-            await File.WriteAllTextAsync(file.FullName, icsContent);
-            return new ChangedObject(name, changeState);
+            var result = await FilesystemHelper.WriteAllTextAsyncOnlyWhenChanged(file, icsContent);
+            return new ChangedObject(name, result.ChangeState);
         }
 
         private static async Task<EventEntry[]> LoadEventsByName(params string[] eventnames)

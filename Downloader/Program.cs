@@ -133,22 +133,11 @@ namespace Downloader
         private static async Task<ChangedObject> SaveEventFile(IEnumerable<EventEntry> events)
         {
             var filename = events.First().Filename;
-            var eventFile = new FileInfo(EVENT_DIRECTORY.FullName + Path.DirectorySeparatorChar + filename);
+            var eventFile = FilesystemHelper.GenerateFileInfo(EVENT_DIRECTORY, filename);
             var content = GenerateFileJSONContent(events);
-            ChangeState changeState = ChangeState.Created;
 
-            if (eventFile.Exists)
-            {
-                var currentContent = await File.ReadAllTextAsync(eventFile.FullName);
-
-                if (currentContent == content)
-                    return new ChangedObject(filename, ChangeState.Unchanged);
-
-                changeState = ChangeState.Changed;
-            }
-
-            await File.WriteAllTextAsync(eventFile.FullName, content);
-            return new ChangedObject(filename, changeState);
+            var result = await FilesystemHelper.WriteAllTextAsyncOnlyWhenChanged(eventFile, content);
+            return new ChangedObject(filename, result.ChangeState);
         }
 
         private static string GenerateFileJSONContent(IEnumerable<EventEntry> events)
