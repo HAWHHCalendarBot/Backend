@@ -76,8 +76,7 @@ namespace Parser
 
             try
             {
-                var userconfigJson = await File.ReadAllTextAsync(e.FullPath);
-                var userconfig = JsonHelper.ConvertFromJson<Userconfig>(userconfigJson);
+                var userconfig = await JsonHelper.ConvertFromJsonAsync<Userconfig>(new FileInfo(e.FullPath));
 
                 var result = await GenerateCalendar(userconfig);
                 Log("Generated " + e.Name + " new: " + result.ChangeState);
@@ -139,13 +138,9 @@ namespace Parser
 
         private static async Task<Userconfig[]> GetAllUserconfigs()
         {
-            var userconfigJsons = await USERCONFIG_DIRECTORY.EnumerateFiles("*.json")
-                .Select(o => File.ReadAllTextAsync(o.FullName))
+            var userconfigs = await USERCONFIG_DIRECTORY.EnumerateFiles("*.json")
+                .Select(o => JsonHelper.ConvertFromJsonAsync<Userconfig>(o))
                 .WhenAll();
-
-            var userconfigs = userconfigJsons
-                .Select(o => JsonHelper.ConvertFromJson<Userconfig>(o))
-                .ToArray();
 
             return userconfigs;
         }
@@ -179,13 +174,13 @@ namespace Parser
         {
             var filenamesOfEvents = eventnames.Select(EventEntry.GetFilename).ToArray();
 
-            var eventJsons = await EVENT_DIRECTORY.EnumerateFiles("*.json")
+            var eventsArrays = await EVENT_DIRECTORY.EnumerateFiles("*.json")
                 .Where(o => filenamesOfEvents.Contains(o.Name))
-                .Select(o => File.ReadAllTextAsync(o.FullName))
+                .Select(o => JsonHelper.ConvertFromJsonAsync<EventEntry[]>(o))
                 .WhenAll();
 
-            var events = eventJsons
-                .SelectMany(o => JsonHelper.ConvertFromJson<EventEntry[]>(o))
+            var events = eventsArrays
+                .SelectMany(o => o)
                 .ToArray();
 
             return events;

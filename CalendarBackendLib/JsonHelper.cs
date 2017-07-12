@@ -2,6 +2,7 @@
 using System.IO;
 using System.Runtime.Serialization.Json;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace CalendarBackendLib
 {
@@ -26,6 +27,18 @@ namespace CalendarBackendLib
                 T obj = (T)serializer.ReadObject(ms);
                 return obj;
             }
+        }
+
+        public static T ConvertFromJson<T>(FileInfo file)
+        {
+            var content = File.ReadAllText(file.FullName);
+            return ConvertFromJson<T>(content);
+        }
+
+        public static async Task<T> ConvertFromJsonAsync<T>(FileInfo file)
+        {
+            var content = await File.ReadAllTextAsync(file.FullName);
+            return ConvertFromJson<T>(content);
         }
     }
 }
