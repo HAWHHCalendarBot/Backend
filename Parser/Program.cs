@@ -34,7 +34,7 @@ namespace Parser
 
             while (true)
             {
-                var deleteTask = DeleteNotAnymoreNeededCalendars();
+                DeleteNotAnymoreNeededCalendars();
                 Log("Now wait for changes...");
                 System.Threading.Thread.Sleep(1000 * 60 * 60); // 1 hour
             }
@@ -103,27 +103,21 @@ namespace Parser
             await GenerateSetOfUserconfigs(userconfigs);
         }
 
-        private static async Task DeleteNotAnymoreNeededCalendars()
+        private static void DeleteNotAnymoreNeededCalendars()
         {
-            Log("find unneeded calendars...");
-
-            var userconfigs = await GetAllUserconfigs();
-            var allIds = userconfigs
-                .Select(o => o.chat.id.ToString())
+            var generatedCalendars = USERCONFIG_DIRECTORY.EnumerateFiles()
+                .Select(o => o.Name.Replace(".json", ".ics"))
                 .ToArray();
 
-            var test = CALENDAR_DIRECTORY.EnumerateFiles("*.ics")
-                .Where(o => !allIds.Contains(o.Name.Replace(".ics", "")))
+            var calendarsToDelete = CALENDAR_DIRECTORY.EnumerateFiles()
+                .Where(o => !generatedCalendars.Contains(o.Name))
                 .ToArray();
 
-            if (test.Length == 0)
-            {
-                Log("nothing to delete.");
+            if (calendarsToDelete.Length == 0)
                 return;
-            }
 
-            Log(test.ToArrayString("delete"));
-            foreach (var item in test)
+            Log(calendarsToDelete.ToArrayString("delete"));
+            foreach (var item in calendarsToDelete)
             {
                 item.Delete();
             }
