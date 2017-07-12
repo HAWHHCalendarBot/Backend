@@ -136,14 +136,7 @@ namespace Parser
                 Log(changeStates.OnlyUnchanged().ToArrayString("Unchanged"));
         }
 
-        private static async Task<Userconfig[]> GetAllUserconfigs()
-        {
-            var userconfigs = await USERCONFIG_DIRECTORY.EnumerateFiles("*.json")
-                .Select(o => JsonHelper.ConvertFromJsonAsync<Userconfig>(o))
-                .WhenAll();
-
-            return userconfigs;
-        }
+        #region GenerateCalendar
 
         private static async Task<ChangedObject> GenerateCalendar(Userconfig config)
         {
@@ -158,6 +151,19 @@ namespace Parser
 
             var result = await FilesystemHelper.WriteAllTextAsyncOnlyWhenChanged(file, icsContent);
             return new ChangedObject(name, result.ChangeState);
+        }
+
+        #endregion
+
+        #region From Filesystem
+
+        private static async Task<Userconfig[]> GetAllUserconfigs()
+        {
+            var userconfigs = await USERCONFIG_DIRECTORY.EnumerateFiles("*.json")
+                .Select(o => JsonHelper.ConvertFromJsonAsync<Userconfig>(o))
+                .WhenAll();
+
+            return userconfigs;
         }
 
         private static async Task<EventEntry[]> LoadEventsByName(params string[] eventnames)
@@ -176,5 +182,6 @@ namespace Parser
             return events;
         }
 
+        #endregion
     }
 }
