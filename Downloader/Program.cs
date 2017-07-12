@@ -102,6 +102,12 @@ namespace Downloader
             {
                 Log("Nothing to delete");
             }
+
+            Log("Save Event list file...");
+            var eventList = string.Join("\n", eventsByName.Select(o => o.Key));
+            var eventFileList = FilesystemHelper.GenerateFileInfo(EVENT_DIRECTORY, "all.txt");
+            await FilesystemHelper.WriteAllTextAsyncOnlyWhenChanged(eventFileList, eventList);
+            Log("Saved Event list");
         }
 
         private static async Task<Uri[]> GetEventFileUrisFromBaseUriList(IEnumerable<Uri> baseUriList)
