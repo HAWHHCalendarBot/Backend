@@ -12,7 +12,9 @@ namespace Downloader
     {
         private static HttpClient GetHttpClient(string productName = "HAWHHCalendarBot", string productVersion = "1.0")
         {
-            var client = new HttpClient();
+            var httpClientHandler = new HttpClientHandler();
+            httpClientHandler.ServerCertificateCustomValidationCallback = (message, cert, chain, errors) => { return true; };
+            var client = new HttpClient(httpClientHandler);
             client.DefaultRequestHeaders.UserAgent.Add(new ProductInfoHeaderValue(productName, productVersion));
 
             return client;
