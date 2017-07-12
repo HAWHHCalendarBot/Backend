@@ -127,7 +127,7 @@ namespace Parser
 
         private static async Task GenerateSetOfUserconfigs(IEnumerable<Userconfig> userconfigs)
         {
-            Log(userconfigs.Select(o => o.chat.first_name).ToArrayString("Generate new"));
+            Log("Generate " + userconfigs.Count() + " userconfigs...");
 
             var changeStates = await userconfigs
                 .Select(GenerateCalendar)
