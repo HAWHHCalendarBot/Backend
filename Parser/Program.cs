@@ -47,18 +47,20 @@ namespace Parser
 
         private static async void EventFileChanged(object sender, FileSystemEventArgs e)
         {
-            Log("EventFile " + e.Name + " change detected.");
+            await EventFileChanged(new FileInfo(e.FullPath));
+        }
+
+        private static async Task EventFileChanged(FileInfo eventFile)
+        {
+            Log("Event File " + eventFile.Name + " change detected");
 
             try
             {
-                var fileinfo = new FileInfo(e.FullPath);
-                var eventname = fileinfo.Name.Replace(".json", "");
-
                 var userconfigs = await GetAllUserconfigs();
                 var relevantUserconfigs = userconfigs
                     .Where(o => o.config.events
                         .Select(EventEntry.GetFilename)
-                        .Contains(e.Name)
+                        .Contains(eventFile.Name)
                     )
                     .ToArray();
 
@@ -66,24 +68,27 @@ namespace Parser
             }
             catch (Exception ex)
             {
-                Log("Could not generate based on EventFile " + e.Name + ": " + ex.Message);
+                Log("Could not generate based on Event File " + eventFile.Name + ": " + ex.Message);
             }
         }
 
         private static async void UserconfigFileChanged(object sender, FileSystemEventArgs e)
         {
-            Log("Userconfig " + e.Name + " change detected.");
+            await UserconfigFileChanged(new FileInfo(e.FullPath));
+        }
 
+        private static async Task UserconfigFileChanged(FileInfo userconfigFile)
+        {
             try
             {
-                var userconfig = await JsonHelper.ConvertFromJsonAsync<Userconfig>(new FileInfo(e.FullPath));
-
-                var result = await GenerateCalendar(userconfig);
-                Log("Generated " + e.Name + " new: " + result.ChangeState);
+                var userconfig = await JsonHelper.ConvertFromJsonAsync<Userconfig>(userconfigFile);
+                Log("Userconfig " + userconfig.chat.first_name + " changed. Update Calendar.");
+                var changeState = await GenerateCalendar(userconfig);
+                Log("Userconfig " + userconfig.chat.first_name + " was generated: " + changeState.ChangeState);
             }
             catch (Exception ex)
             {
-                Log("Could not generate Userconfig " + e.Name + ": " + ex.Message);
+                Log("Could not generate based on Userconfig File " + userconfigFile.Name + ": " + ex.Message);
             }
         }
 
