@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -31,6 +32,12 @@ namespace CalendarBackendLib
             var changeState = file.Exists ? ChangeState.Changed : ChangeState.Created;
             await File.WriteAllTextAsync(file.FullName, content);
             return new ChangedObject<FileInfo>(file, changeState);
+        }
+
+        public static IEnumerable<FileInfo> GetFilesChangedAfterDate(DirectoryInfo directory, DateTime modifiedAfter, string searchPattern = "*", SearchOption searchOption = SearchOption.TopDirectoryOnly)
+        {
+            return directory.EnumerateFiles(searchPattern, searchOption)
+                .Where(o => o.LastWriteTime > modifiedAfter);
         }
     }
 }

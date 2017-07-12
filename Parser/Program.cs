@@ -16,55 +16,66 @@ namespace Parser
 
         static void Main(string[] args)
         {
-            Log("Start FileSystemWatcher...");
-            var eventFileWatcher = new FileSystemWatcher(EVENT_DIRECTORY.FullName, "*.json");
-            eventFileWatcher.Changed += EventFileChanged;
-            eventFileWatcher.Created += EventFileChanged;
-            eventFileWatcher.EnableRaisingEvents = true;
+            try
+            {
+                var task = Main();
+                task.Wait();
+            }
+            catch (Exception ex)
+            {
+                Log(ex.ToString());
+            }
+        }
 
-            var userconfigFileWatcher = new FileSystemWatcher(USERCONFIG_DIRECTORY.FullName, "*.json");
-            userconfigFileWatcher.Changed += UserconfigFileChanged;
-            userconfigFileWatcher.Created += UserconfigFileChanged;
-            userconfigFileWatcher.EnableRaisingEvents = true;
-            Log("FileSystemWatcher started.");
-
+        private static async Task Main()
+        {
+            var lastGeneration = DateTime.Now;
             Log("Generate all Userconfigs...");
-            var generateAllTask = GenerateAllUserconfigs();
+            await GenerateAllUserconfigs();
             Log("All generated");
 
             Log("Start main loop...");
             while (true)
             {
-                DeleteNotAnymoreNeededCalendars();
-                System.Threading.Thread.Sleep(1000 * 60 * 60); // 1 hour
+                try
+                {
+                    var preScan = DateTime.Now;
+                    var changedUserconfigFiles = FilesystemHelper.GetFilesChangedAfterDate(USERCONFIG_DIRECTORY, lastGeneration);
+                    var changedUserconfigIds = changedUserconfigFiles.Select(o => o.Name.Replace(".json", "")).Select(o => Convert.ToInt32(o));
+                    var changedEventFiles = FilesystemHelper.GetFilesChangedAfterDate(EVENT_DIRECTORY, lastGeneration);
+
+                    if (changedUserconfigFiles.Any())
+                        Log(changedUserconfigFiles.ToArrayString("Userconfig Files changed"));
+
+                    if (changedEventFiles.Any())
+                        Log(changedEventFiles.ToArrayString("Event Files changed"));
+
+                    if (changedUserconfigFiles.Any() || changedEventFiles.Any())
+                    {
+                        var allUserconfigs = await GetAllUserconfigs();
+
+                        var directChangedUserconfigs = allUserconfigs.Where(o => changedUserconfigIds.Contains(o.chat.id));
+                        var indirectChangedUserconfigs = changedEventFiles.SelectMany(o => GetUserconfigsThatNeedEventFile(allUserconfigs, o));
+
+                        var allChangedUserconfigs = directChangedUserconfigs.Concat(indirectChangedUserconfigs).Distinct();
+                        await GenerateSetOfUserconfigs(allChangedUserconfigs);
+                        lastGeneration = preScan;
+                    }
+
+                    DeleteNotAnymoreNeededCalendars();
+                }
+                catch (Exception ex)
+                {
+                    Log(ex.ToString());
+                }
+
+                System.Threading.Thread.Sleep(1000 * 5); // 5 Seconds
             }
         }
 
         private static void Log(string text)
         {
             Console.WriteLine(text);
-        }
-
-        private static async void EventFileChanged(object sender, FileSystemEventArgs e)
-        {
-            await EventFileChanged(new FileInfo(e.FullPath));
-        }
-
-        private static async Task EventFileChanged(FileInfo eventFile)
-        {
-            Log("Event File " + eventFile.Name + " change detected");
-
-            try
-            {
-                var userconfigs = await GetAllUserconfigs();
-                var relevantUserconfigs = GetUserconfigsThatNeedEventFile(userconfigs, eventFile);
-
-                await GenerateSetOfUserconfigs(relevantUserconfigs);
-            }
-            catch (Exception ex)
-            {
-                Log("Could not generate based on Event File " + eventFile.Name + ": " + ex.Message);
-            }
         }
 
         private static Userconfig[] GetUserconfigsThatNeedEventFile(Userconfig[] userconfigs, FileInfo eventFile)
@@ -75,26 +86,6 @@ namespace Parser
                     .Contains(eventFile.Name)
                 )
                 .ToArray();
-        }
-
-        private static async void UserconfigFileChanged(object sender, FileSystemEventArgs e)
-        {
-            await UserconfigFileChanged(new FileInfo(e.FullPath));
-        }
-
-        private static async Task UserconfigFileChanged(FileInfo userconfigFile)
-        {
-            try
-            {
-                var userconfig = await JsonHelper.ConvertFromJsonAsync<Userconfig>(userconfigFile);
-                Log("Userconfig " + userconfig.chat.first_name + " changed. Update Calendar.");
-                var changeState = await GenerateCalendar(userconfig);
-                Log("Userconfig " + userconfig.chat.first_name + " was generated: " + changeState.ChangeState);
-            }
-            catch (Exception ex)
-            {
-                Log("Could not generate based on Userconfig File " + userconfigFile.Name + ": " + ex.Message);
-            }
         }
 
         private static async Task GenerateAllUserconfigs()
