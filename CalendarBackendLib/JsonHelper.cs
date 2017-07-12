@@ -7,7 +7,7 @@ namespace CalendarBackendLib
 {
     public static class JsonHelper
     {
-        public static string ConvertObjectToJSon<T>(T obj)
+        public static string ConvertToJson<T>(T obj)
         {
             using (var ms = new MemoryStream())
             {
@@ -18,7 +18,7 @@ namespace CalendarBackendLib
             }
         }
 
-        public static T ConvertJSonToObject<T>(string jsonString)
+        public static T ConvertFromJson<T>(string jsonString)
         {
             using (var ms = new MemoryStream(Encoding.UTF8.GetBytes(jsonString)))
             {

@@ -77,7 +77,7 @@ namespace Parser
             try
             {
                 var userconfigJson = await File.ReadAllTextAsync(e.FullPath);
-                var userconfig = JsonHelper.ConvertJSonToObject<Userconfig>(userconfigJson);
+                var userconfig = JsonHelper.ConvertFromJson<Userconfig>(userconfigJson);
 
                 var result = await GenerateCalendar(userconfig);
                 Log("Generated " + e.Name + " new: " + result.ChangeState);
@@ -144,7 +144,7 @@ namespace Parser
                 .WhenAll();
 
             var userconfigs = userconfigJsons
-                .Select(o => JsonHelper.ConvertJSonToObject<Userconfig>(o))
+                .Select(o => JsonHelper.ConvertFromJson<Userconfig>(o))
                 .ToArray();
 
             return userconfigs;
@@ -185,7 +185,7 @@ namespace Parser
                 .WhenAll();
 
             var events = eventJsons
-                .SelectMany(o => JsonHelper.ConvertJSonToObject<EventEntry[]>(o))
+                .SelectMany(o => JsonHelper.ConvertFromJson<EventEntry[]>(o))
                 .ToArray();
 
             return events;
