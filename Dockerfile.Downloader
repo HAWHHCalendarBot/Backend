@@ -1,7 +1,7 @@
 FROM microsoft/dotnet:2-sdk
 
 WORKDIR /app/Downloader
-VOLUME /app/Downloader/eventjsons
+VOLUME /app/Downloader/eventfiles
 
 COPY CalendarBackendLib /app/CalendarBackendLib
 COPY Downloader/Downloader.csproj ./

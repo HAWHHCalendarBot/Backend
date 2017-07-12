@@ -2,7 +2,7 @@ FROM microsoft/dotnet:2-sdk
 
 WORKDIR /app/Parser
 VOLUME /app/Parser/calendars
-VOLUME /app/Parser/eventjsons
+VOLUME /app/Parser/eventfiles
 VOLUME /app/Parser/userconfig
 
 COPY CalendarBackendLib /app/CalendarBackendLib

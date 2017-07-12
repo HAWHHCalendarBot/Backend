@@ -22,7 +22,7 @@ namespace Downloader
         private const int WAITTIME_BETWEEN_TWO_DOWNLOADS_IN_MINUTES = 100;
 
 
-        private static readonly DirectoryInfo EVENT_DIRECTORY = new DirectoryInfo(Environment.CurrentDirectory).CreateSubdirectory("eventjsons");
+        private static readonly DirectoryInfo EVENT_DIRECTORY = new DirectoryInfo(Environment.CurrentDirectory).CreateSubdirectory("eventfiles");
 
         static void Main(string[] args)
         {
