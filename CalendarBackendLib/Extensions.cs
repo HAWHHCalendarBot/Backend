@@ -22,5 +22,10 @@ namespace CalendarBackendLib
         {
             return description + " " + list.Count() + ": [" + string.Join(";", list) + "]";
         }
+
+        public static Dictionary<TKey, TValue> ToDictionary<TKey, TValue>(this IEnumerable<KeyValuePair<TKey, TValue>> dict)
+        {
+            return dict.ToDictionary(o => o.Key, o => o.Value);
+        }
     }
 }
