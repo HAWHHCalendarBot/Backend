@@ -6,9 +6,9 @@ using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Downloader
+namespace CalendarBackendLib
 {
-    internal static class HttpHelper
+    public static class HttpHelper
     {
         private static HttpClient GetHttpClient(string productName = "HAWHHCalendarBot", string productVersion = "1.0")
         {
