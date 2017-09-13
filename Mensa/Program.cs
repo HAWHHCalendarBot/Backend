@@ -46,20 +46,20 @@ namespace Mensa
             var canteens = await LoadCanteens(BASE_URL);
         }
 
-        private static async Task<Dictionary<string, Uri>> LoadCanteens(Uri baseUrl)
+        private static async Task<Canteen[]> LoadCanteens(Uri baseUrl)
         {
             var source = await baseUrl.GetContent();
             return LoadCanteensFromSource(source);
         }
 
-        private static Dictionary<string, Uri> LoadCanteensFromSource(string baseUrlSource)
+        private static Canteen[] LoadCanteensFromSource(string baseUrlSource)
         {
             var regex = new Regex(@"<p>- <a href=""([^""]+)""(?: target=""_blank"")?>([^<]+)<");
             var matches = regex.Matches(baseUrlSource).OfType<Match>();
 
             return matches
-                .Select(m => new KeyValuePair<string, Uri>(m.Groups[2].Value, new Uri(m.Groups[1].Value)))
-                .ToDictionary();
+                .Select(m => new Canteen(m.Groups[2].Value, new Uri(m.Groups[1].Value)))
+                .ToArray();
         }
     }
 }
