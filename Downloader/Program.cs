@@ -55,17 +55,8 @@ namespace Downloader
         private static async Task DoStuff()
         {
             Log("start download at " + DateTime.Now);
-            var uris = await GetEventFileUrisFromBaseUriList(SOURCE_URIS);
-            uris = uris.ToArray();
-            Log("got list of uris: " + uris.Length);
 
-            var content = await uris.Select(o => o.GetContent(HAW_ICS_ENCODING)).WhenAll();
-            Log("got ics files: " + content.Length);
-            var formattedContent = content.Select(s => s.Replace("\r\n", "\n"));
-            var events = formattedContent
-                .SelectMany(o => IcsFileContentParser.GetEvents(o))
-                .Distinct()
-                .ToArray();
+            var events = await GetIcsEvents(SOURCE_URIS);
             Log("Events: " + events.Length);
 
             var eventsByName = events.GroupBy(o => o.Name);
@@ -108,6 +99,23 @@ namespace Downloader
             var eventFileList = FilesystemHelper.GenerateFileInfo(EVENT_DIRECTORY, "all.txt");
             await FilesystemHelper.WriteAllTextAsyncOnlyWhenChanged(eventFileList, eventList);
             Log("Saved Event list");
+        }
+
+        private static async Task<EventEntry[]> GetIcsEvents(IEnumerable<Uri> baseUriList)
+        {
+            var uris = await GetEventFileUrisFromBaseUriList(SOURCE_URIS);
+            uris = uris.ToArray();
+            Log("got list of ics uris: " + uris.Length);
+
+            var fileContent = await uris.Select(o => o.GetContent(HAW_ICS_ENCODING)).WhenAll();
+            Log("got ics files: " + fileContent.Length);
+            var formattedContent = fileContent.Select(s => s.Replace("\r\n", "\n"));
+            var events = formattedContent
+                .SelectMany(o => IcsFileContentParser.GetEvents(o))
+                .Distinct()
+                .ToArray();
+
+            return events;
         }
 
         private static async Task<Uri[]> GetEventFileUrisFromBaseUriList(IEnumerable<Uri> baseUriList)
