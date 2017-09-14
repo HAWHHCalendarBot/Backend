@@ -67,6 +67,7 @@ namespace Downloader
             var events = icsEvents
                 .Concat(informatikTxtEvents)
                 .Distinct()
+                .OrderBy(o => o.StartTime)
                 .ToArray();
             Log("Total Events: " + events.Length);
 
