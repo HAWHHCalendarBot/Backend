@@ -13,12 +13,14 @@ namespace Downloader
     class Program
     {
         private static readonly Uri[] SOURCE_URIS = new string[] {
-            "https://userdoc.informatik.haw-hamburg.de/doku.php?id=stundenplan:ics_public",
+            // "https://userdoc.informatik.haw-hamburg.de/doku.php?id=stundenplan:ics_public",
             "http://www.etech.haw-hamburg.de/Stundenplan/ICS/"
         }.Select(o => new Uri(o)).ToArray();
 
+        private static readonly Uri INFORMATIK_TXT_URI = new Uri("https://www.haw-hamburg.de/fileadmin/user_upload/TI-I/Studium/Veranstaltungsplaene/Sem_I.txt");
+
         private static readonly Regex ICS_LINK_REGEX = new Regex(@"href=""(\S+\.ics)""");
-        private static readonly Encoding HAW_ICS_ENCODING = Encoding.GetEncoding("iso-8859-1");
+        private static readonly Encoding HAW_FILE_ENCODING = Encoding.GetEncoding("iso-8859-1");
         private const int WAITTIME_BETWEEN_TWO_DOWNLOADS_IN_MINUTES = 100;
 
 
@@ -55,18 +57,19 @@ namespace Downloader
         private static async Task DoStuff()
         {
             Log("start download at " + DateTime.Now);
-            var uris = await GetEventFileUrisFromBaseUriList(SOURCE_URIS);
-            uris = uris.ToArray();
-            Log("got list of uris: " + uris.Length);
 
-            var content = await uris.Select(o => o.GetContent(HAW_ICS_ENCODING)).WhenAll();
-            Log("got ics files: " + content.Length);
-            var formattedContent = content.Select(s => s.Replace("\r\n", "\n"));
-            var events = formattedContent
-                .SelectMany(o => IcsFileContentParser.GetEvents(o))
+            var icsEvents = await GetIcsEvents(SOURCE_URIS);
+            Log("ICS Events: " + icsEvents.Length);
+
+            var informatikTxtEvents = await GetInformatikTxtEvents(INFORMATIK_TXT_URI);
+            Log("informatik.txt Events: " + informatikTxtEvents.Length);
+
+            var events = icsEvents
+                .Concat(informatikTxtEvents)
                 .Distinct()
+                .OrderBy(o => o.StartTime)
                 .ToArray();
-            Log("Events: " + events.Length);
+            Log("Total Events: " + events.Length);
 
             var eventsByName = events.GroupBy(o => o.Name);
             Log("EventsByName: " + eventsByName.Count());
@@ -108,6 +111,29 @@ namespace Downloader
             var eventFileList = FilesystemHelper.GenerateFileInfo(EVENT_DIRECTORY, "all.txt");
             await FilesystemHelper.WriteAllTextAsyncOnlyWhenChanged(eventFileList, eventList);
             Log("Saved Event list");
+        }
+
+        private static async Task<EventEntry[]> GetIcsEvents(IEnumerable<Uri> baseUriList)
+        {
+            var uris = await GetEventFileUrisFromBaseUriList(SOURCE_URIS);
+            uris = uris.ToArray();
+            Log("got list of ics uris: " + uris.Length);
+
+            var fileContent = await uris.Select(o => o.GetContent(HAW_FILE_ENCODING)).WhenAll();
+            Log("got ics files: " + fileContent.Length);
+            var formattedContent = fileContent.Select(s => s.Replace("\r\n", "\n"));
+            var events = formattedContent
+                .SelectMany(o => IcsFileContentParser.GetEvents(o))
+                .Distinct()
+                .ToArray();
+
+            return events;
+        }
+
+        private static async Task<EventEntry[]> GetInformatikTxtEvents(Uri informatikTxtUri)
+        {
+            var content = await informatikTxtUri.GetContent(HAW_FILE_ENCODING);
+            return InformatikTxtContentParser.GetEvents(content);
         }
 
         private static async Task<Uri[]> GetEventFileUrisFromBaseUriList(IEnumerable<Uri> baseUriList)
