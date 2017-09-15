@@ -1,0 +1,12 @@
+FROM microsoft/dotnet:2-sdk
+
+WORKDIR /app/Mensa
+VOLUME /app/Mensa/meals
+
+COPY CalendarBackendLib /app/CalendarBackendLib
+COPY Mensa/Mensa.csproj ./
+RUN dotnet restore
+
+COPY Mensa/ ./
+RUN dotnet publish -c Release -o out
+ENTRYPOINT ["dotnet", "out/Mensa.dll"]
