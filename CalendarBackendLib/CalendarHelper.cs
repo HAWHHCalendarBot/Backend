@@ -7,6 +7,10 @@ namespace CalendarBackendLib
 {
     public class CalendarHelper
     {
+        private static readonly Calendar CALENDAR = new GregorianCalendar(GregorianCalendarTypes.Localized);
+        private const CalendarWeekRule WEEK_RULE = CalendarWeekRule.FirstFourDayWeek;
+        private const DayOfWeek FIRST_DAY_OF_WEEK = DayOfWeek.Monday;
+
         public static DateTime DateOfWeekDayISO8601(int year, int week, DayOfWeek weekday)
         {
             var firstDayOfWeek = FirstDateOfWeekISO8601(year, week);
@@ -22,8 +26,7 @@ namespace CalendarBackendLib
             int daysOffset = DayOfWeek.Thursday - jan1.DayOfWeek;
 
             DateTime firstThursday = jan1.AddDays(daysOffset);
-            var cal = CultureInfo.CurrentCulture.Calendar;
-            int firstWeek = cal.GetWeekOfYear(firstThursday, CalendarWeekRule.FirstFourDayWeek, DayOfWeek.Monday);
+            int firstWeek = CALENDAR.GetWeekOfYear(firstThursday, WEEK_RULE, FIRST_DAY_OF_WEEK);
 
             var weekNum = weekOfYear;
             if (firstWeek <= 1)
