@@ -36,5 +36,10 @@ namespace CalendarBackendLib
             var result = firstThursday.AddDays(weekNum * 7);
             return result.AddDays(-3);
         }
+
+        public static int WeekOfDate(DateTime date)
+        {
+            return CALENDAR.GetWeekOfYear(DateTime.Now, WEEK_RULE, FIRST_DAY_OF_WEEK);
+        }
     }
 }

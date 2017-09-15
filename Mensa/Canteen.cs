@@ -6,13 +6,20 @@ namespace Mensa
 {
     internal class Canteen
     {
-        public readonly string Name;
-        public readonly Uri Uri;
+        private const string WEEK_BASE_URL = "http://speiseplan.studierendenwerk-hamburg.de/de/";
 
-        public Canteen(string name, Uri uri)
+        public readonly int ID;
+        public readonly string Name;
+
+        public Canteen(int id, string name)
         {
+            ID = id;
             Name = name;
-            Uri = uri;
+        }
+
+        public Uri GetWeekUri(int year, int week)
+        {
+            return new Uri(WEEK_BASE_URL + ID + "/" + year + "/" + week + "/");
         }
     }
 }
