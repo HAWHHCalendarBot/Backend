@@ -85,7 +85,9 @@ namespace Mensa
                     name = ADDITIVE_REPLACE_REGEX.Replace(nameHtml, "$2")
                         .Replace("<strong>", "")
                         .Replace("</strong>", "")
-                        .Replace("  ", " ");
+                        .Replace("  ", " ")
+                        .Replace(") ,", "),")
+                        .Trim();
                 }
                 else if (PRICE_REGEX.IsMatch(line))
                 {
