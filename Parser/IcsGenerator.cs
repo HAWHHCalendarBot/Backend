@@ -28,6 +28,8 @@ END:VCALENDAR
             icsContent += string.Join("\n", events.Select(GenerateIcsVEventOfEventEntry));
             icsContent += ICS_SUFFIX;
 
+            icsContent = icsContent.Replace("\n", "\r\n");
+
             return icsContent;
         }
 
