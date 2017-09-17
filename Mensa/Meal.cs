@@ -10,6 +10,7 @@ namespace Mensa
         public DateTime Date;
         public double PriceStudent;
         public double PriceAttendant;
+        public Dictionary<int, string> Additives;
 
         public bool Pig;
         public bool Beef;
@@ -30,6 +31,8 @@ namespace Mensa
             Date = date;
             PriceStudent = priceStudent;
             PriceAttendant = priceAttendant;
+
+            Additives = new Dictionary<int, string>();
         }
 
         public override string ToString()
