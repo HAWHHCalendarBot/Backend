@@ -1,6 +1,7 @@
 ﻿using CalendarBackendLib;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -78,8 +79,9 @@ namespace Mensa
                 else if (PRICE_REGEX.IsMatch(line))
                 {
                     var match = PRICE_REGEX.Match(line);
-                    var price1 = double.Parse(match.Groups[1].Value);
-                    var price2 = double.Parse(match.Groups[2].Value);
+                    var numberFormat = CultureInfo.GetCultureInfo("de-DE").NumberFormat;
+                    var price1 = double.Parse(match.Groups[1].Value, numberFormat);
+                    var price2 = double.Parse(match.Groups[2].Value, numberFormat);
                     prices = new double[] { price1, price2 };
                 }
                 else if (BONUS_REGEX.IsMatch(line))
