@@ -81,8 +81,7 @@ END:VCALENDAR
         private static string StringToHexHash(string content)
         {
             var val = content
-                .OfType<byte>()
-                .Select(Convert.ToDouble)
+                .Select(o => Convert.ToDouble((int)o))
                 .Sum();
 
             return DoubleToHex(val);
