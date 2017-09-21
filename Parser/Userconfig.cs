@@ -33,12 +33,7 @@ namespace Parser
     public class Config
     {
         public string[] events { get; set; }
-        public UserSettings settings { get; set; }
         public bool admin { get; set; }
-    }
-
-    public class UserSettings
-    {
         public bool stisysUpdate { get; set; }
     }
 }
