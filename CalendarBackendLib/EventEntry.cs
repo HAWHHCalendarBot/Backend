@@ -5,7 +5,7 @@ using System.Text;
 
 namespace CalendarBackendLib
 {
-    public class EventEntry
+    public class EventEntry : ICloneable
     {
         public string Name { get; set; }
         public string Location { get; set; }
@@ -75,6 +75,11 @@ namespace CalendarBackendLib
         public override string ToString()
         {
             return string.Format("{0} {1}", Name, StartTime);
+        }
+
+        public object Clone()
+        {
+            return new EventEntry(Name, StartTime, EndTime, Location, Description);
         }
     }
 }

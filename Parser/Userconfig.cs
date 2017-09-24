@@ -32,8 +32,22 @@ namespace Parser
 
     public class Config
     {
+        public Change[] changes { get; set; }
         public string[] events { get; set; }
+
         public bool admin { get; set; }
+        public bool showRemovedEvents { get; set; }
         public bool stisysUpdate { get; set; }
+    }
+
+    public class Change
+    {
+        public string name { get; set; }
+        public string date { get; set; }
+        internal DateTime DateParsed => DateTime.Parse(date);
+
+        public bool remove { get; set; }
+        public string starttime { get; set; }
+        public string endtime { get; set; }
     }
 }

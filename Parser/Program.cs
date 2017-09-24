@@ -135,17 +135,70 @@ namespace Parser
 
         private static async Task<ChangedObject> GenerateCalendar(Userconfig config)
         {
-            return await GenerateCalendar(config.chat.first_name, config.chat.id.ToString(), config.config.events);
+            return await GenerateCalendar(config.chat.first_name, config.chat.id.ToString(), config.config.events, config.config.changes, config.config.showRemovedEvents);
         }
 
-        private static async Task<ChangedObject> GenerateCalendar(string name, string filename, params string[] eventnames)
+        private static async Task<ChangedObject> GenerateCalendar(string name, string filename, string[] eventnames, IEnumerable<Change> changes, bool showRemovedEvents)
         {
-            var events = await LoadEventsByName(eventnames);
+            var allEvents = await LoadEventsByName(eventnames);
+            var events = ApplyChanges(allEvents, changes, showRemovedEvents);
+
             var icsContent = IcsGenerator.GenerateIcsContent(name, events);
             var file = FilesystemHelper.GenerateFileInfo(CALENDAR_DIRECTORY, filename, ".ics");
 
             var result = await FilesystemHelper.WriteAllTextAsyncOnlyWhenChanged(file, icsContent);
             return new ChangedObject(name, result.ChangeState);
+        }
+
+        private static EventEntry[] ApplyChanges(IEnumerable<EventEntry> events, IEnumerable<Change> changes, bool showRemovedEvents)
+        {
+            var result = events
+               .Select(e =>
+                {
+                    var changeOfEvent = changes.SingleOrDefault(o => o.name == e.Name && o.DateParsed == e.StartTime.ToUniversalTime());
+                    return ApplyChange(e, changeOfEvent, showRemovedEvents);
+                })
+                .Where(o => o != null)
+                .ToArray();
+
+            return result;
+        }
+
+        private static EventEntry ApplyChange(EventEntry original, Change change, bool showRemovedEvents)
+        {
+            if (change == null) return original;
+
+            var changedEvent = (EventEntry)original.Clone();
+
+            if (!string.IsNullOrWhiteSpace(original.Description))
+                changedEvent.Description += "\n\n";
+            changedEvent.Description += "Diese Veranstaltung wurde nachträglich von dir verändert. Nutze /changes im Bot um dies anzupassen.\nhttps://t.me/HAWHHCalendarBot";
+
+            if (change.remove)
+            {
+                if (showRemovedEvents)
+                {
+                    changedEvent.Name = "🚫 " + original.Name;
+                    return changedEvent;
+                }
+                else
+                {
+                    return null;
+                }
+            }
+
+            changedEvent.Name = "✏️ " + original.Name;
+
+            if (!string.IsNullOrWhiteSpace(change.starttime))
+            {
+                changedEvent.StartTime = original.StartTime.Date.Add(TimeSpan.Parse(change.starttime));
+            }
+            if (!string.IsNullOrWhiteSpace(change.endtime))
+            {
+                changedEvent.EndTime = original.EndTime.Date.Add(TimeSpan.Parse(change.endtime));
+            }
+
+            return changedEvent;
         }
 
         #endregion
