@@ -47,7 +47,7 @@ END:VCALENDAR
             if (!string.IsNullOrWhiteSpace(e.Location))
                 content.Add("LOCATION", e.Location);
             if (!string.IsNullOrWhiteSpace(e.Description))
-                content.Add("DESCRIPTION", e.Description);
+                content.Add("DESCRIPTION", e.Description.Replace("\n", "\\n"));
 
             content.Add("UID", GetHashString(e) + "@calendarbot.hawhh.de");
             content.Add("END", "VEVENT");
