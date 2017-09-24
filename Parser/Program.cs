@@ -155,7 +155,7 @@ namespace Parser
             var result = events
                .Select(e =>
                 {
-                    var changeOfEvent = changes.SingleOrDefault(o => o.name == e.Name && o.DateParsed == e.StartTime.ToUniversalTime());
+                    var changeOfEvent = changes.SingleOrDefault(o => o.name == e.Name && o.DateParsed == e.StartTime);
                     return ApplyChange(e, changeOfEvent, showRemovedEvents);
                 })
                 .Where(o => o != null)
