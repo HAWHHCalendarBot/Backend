@@ -23,7 +23,7 @@ namespace Downloader
 
         private static EventEntry GetEventEntryFromEventRegexMatch(Match match)
         {
-            var name = match.Groups[1].Value;
+            var name = match.Groups[1].Value.Trim();
             var locationMixed = match.Groups[2].Value;
             var uid = match.Groups[3].Value;
 
