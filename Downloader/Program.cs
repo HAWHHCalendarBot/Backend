@@ -19,6 +19,9 @@ namespace Downloader
 
         private static readonly Uri INFORMATIK_TXT_URI = new Uri("https://www.haw-hamburg.de/fileadmin/user_upload/TI-I/Studium/Veranstaltungsplaene/Sem_I.txt");
 
+        private static readonly DirectoryInfo BASE_DIRECTORY = new DirectoryInfo(Environment.CurrentDirectory);
+        private static readonly DirectoryInfo ADDITIONALS_DIRECTORY = BASE_DIRECTORY.CreateSubdirectory("additionalEvents");
+
         private static readonly Regex ICS_LINK_REGEX = new Regex(@"href=""(\S+\.ics)""");
         private static readonly Encoding HAW_FILE_ENCODING = Encoding.GetEncoding("iso-8859-1");
         private const int WAITTIME_BETWEEN_TWO_DOWNLOADS_IN_MINUTES = 100;
@@ -64,8 +67,11 @@ namespace Downloader
             // var informatikTxtEvents = await GetInformatikTxtEvents(INFORMATIK_TXT_URI);
             // Log("informatik.txt Events: " + informatikTxtEvents.Length);
 
+            var additionals = await GetAdditionals(ADDITIONALS_DIRECTORY);
+
             var events = icsEvents
                // .Concat(informatikTxtEvents)
+                .Concat(additionals)
                 .Distinct()
                 .OrderBy(o => o.Name)
                 .ThenBy(o => o.StartTime)
@@ -135,6 +141,20 @@ namespace Downloader
         {
             var content = await informatikTxtUri.GetContent(HAW_FILE_ENCODING);
             return InformatikTxtContentParser.GetEvents(content);
+        }
+
+        private static async Task<EventEntry[]> GetAdditionals(DirectoryInfo directoryOfAdditionals)
+        {
+            var addiTasks = await directoryOfAdditionals.EnumerateFiles()
+                .Select(o => JsonHelper.ConvertFromJsonAsync<AdditionalEvent[]>(o))
+                .WhenAll();
+
+            var addis = addiTasks
+                .SelectMany(o => o)
+                .Select(o => o.GetEventEntry())
+                .ToArray();
+
+            return addis;
         }
 
         private static async Task<Uri[]> GetEventFileUrisFromBaseUriList(IEnumerable<Uri> baseUriList)
