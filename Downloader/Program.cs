@@ -13,7 +13,7 @@ namespace Downloader
     class Program
     {
         private static readonly Uri[] SOURCE_URIS = new string[] {
-            // "https://userdoc.informatik.haw-hamburg.de/doku.php?id=stundenplan:ics_public",
+            "https://userdoc.informatik.haw-hamburg.de/doku.php?id=stundenplan:ics_public",
             "http://www.etech.haw-hamburg.de/Stundenplan/ICS/"
         }.Select(o => new Uri(o)).ToArray();
 
@@ -61,11 +61,11 @@ namespace Downloader
             var icsEvents = await GetIcsEvents(SOURCE_URIS);
             Log("ICS Events: " + icsEvents.Length);
 
-            var informatikTxtEvents = await GetInformatikTxtEvents(INFORMATIK_TXT_URI);
-            Log("informatik.txt Events: " + informatikTxtEvents.Length);
+            // var informatikTxtEvents = await GetInformatikTxtEvents(INFORMATIK_TXT_URI);
+            // Log("informatik.txt Events: " + informatikTxtEvents.Length);
 
             var events = icsEvents
-                .Concat(informatikTxtEvents)
+               // .Concat(informatikTxtEvents)
                 .Distinct()
                 .OrderBy(o => o.Name)
                 .ThenBy(o => o.StartTime)
