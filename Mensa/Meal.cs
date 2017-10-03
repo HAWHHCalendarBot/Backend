@@ -10,6 +10,7 @@ namespace Mensa
         public DateTime Date;
         public double PriceStudent;
         public double PriceAttendant;
+        public double PriceGuest;
         public Dictionary<int, string> Additives;
 
         public bool Pig;
@@ -25,12 +26,13 @@ namespace Mensa
         public Meal()
         { }
 
-        public Meal(string name, DateTime date, double priceStudent, double priceAttendant)
+        public Meal(string name, DateTime date, double priceStudent, double priceAttendant, double priceGuest)
         {
             Name = name;
             Date = date;
             PriceStudent = priceStudent;
             PriceAttendant = priceAttendant;
+            PriceGuest = priceGuest;
 
             Additives = new Dictionary<int, string>();
         }

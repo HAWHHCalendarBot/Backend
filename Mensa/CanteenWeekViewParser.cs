@@ -15,7 +15,7 @@ namespace Mensa
         private static readonly Regex DAY_SWITCH_REGEX = new Regex(@"<\/td>");
         private static readonly Regex NAME_REGEX = new Regex(@"<strong>(.+)<\/strong>");
         private static readonly Regex ADDITIVE_REPLACE_REGEX = new Regex(@"<span class=tooltip title=([^>]+)>(\d+)<\/span>");
-        private static readonly Regex PRICE_REGEX = new Regex(@"([\d,]+).€ \/ ([\d,]+).€");
+        private static readonly Regex PRICE_REGEX = new Regex(@"([\d,]+).€ \/ ([\d,]+).€ \/ ([\d,]+).€");
         private static readonly Regex BONUS_REGEX = new Regex(@"<img .+ title=.([^""]+).+\/>");
 
         public static Meal[] GetMeals(int year, int week, string source)
@@ -29,7 +29,7 @@ namespace Mensa
 
             var currentWeekday = DayOfWeek.Monday;
             var name = "";
-            var prices = new double[2];
+            var prices = new double[3];
             var boniTexts = new List<string>();
             var additives = new Dictionary<int, string>();
 
@@ -41,11 +41,11 @@ namespace Mensa
                 }
                 else if (MEAL_SWITCH_REGEX.IsMatch(line))
                 {
-                    if (string.IsNullOrWhiteSpace(name) || prices[0] == 0 || prices[1] == 0)
+                    if (string.IsNullOrWhiteSpace(name) || prices[0] == 0 || prices[1] == 0 || prices[2] == 0)
                         continue;
 
                     var day = CalendarHelper.DateOfWeekDayISO8601(year, week, currentWeekday);
-                    var meal = new Meal(name, day, prices[0], prices[1]);
+                    var meal = new Meal(name, day, prices[0], prices[1], prices[2]);
 
                     meal.Additives = additives;
 
@@ -61,7 +61,7 @@ namespace Mensa
                     meals.Add(meal);
 
                     name = "";
-                    prices = new double[2];
+                    prices = new double[3];
                     boniTexts = new List<string>();
                     additives = new Dictionary<int, string>();
                 }
@@ -69,7 +69,7 @@ namespace Mensa
                 {
                     currentWeekday++;
                     name = "";
-                    prices = new double[2];
+                    prices = new double[3];
                     boniTexts = new List<string>();
                     additives = new Dictionary<int, string>();
                 }
@@ -95,7 +95,8 @@ namespace Mensa
                     var numberFormat = CultureInfo.GetCultureInfo("de-DE").NumberFormat;
                     var price1 = double.Parse(match.Groups[1].Value, numberFormat);
                     var price2 = double.Parse(match.Groups[2].Value, numberFormat);
-                    prices = new double[] { price1, price2 };
+                    var price3 = double.Parse(match.Groups[3].Value, numberFormat);
+                    prices = new double[] { price1, price2, price3 };
                 }
                 else if (BONUS_REGEX.IsMatch(line))
                 {
