@@ -9,7 +9,7 @@ namespace Downloader
 {
     internal static class IcsFileContentParser
     {
-        private static readonly Regex EVENT_REGEX = new Regex(@"BEGIN:VEVENT\nSUMMARY:(.+)\r?\nLOCATION:(.+)\nUID:(.+)\nDTSTART;TZID=Europe\/Berlin:(.+)\nDTEND;TZID=Europe\/Berlin:(.+)\nEND:VEVENT");
+        private static readonly Regex EVENT_REGEX = new Regex(@"BEGIN:VEVENT\nSUMMARY:(.+)\nLOCATION:(.+)\n(?:DESCRIPTION:(.+)\n)?UID:(.+)\nDTSTART;TZID=Europe\/Berlin:(.+)\nDTEND;TZID=Europe\/Berlin:(.+)\nEND:VEVENT");
 
         internal static EventEntry[] GetEvents(string icsFileContent)
         {
@@ -25,15 +25,17 @@ namespace Downloader
         {
             var name = match.Groups[1].Value.Trim();
             var locationMixed = match.Groups[2].Value;
-            var uid = match.Groups[3].Value;
+            var dozent = match.Groups[3].Value.Trim();
+            var uid = match.Groups[4].Value;
 
-            var start = GetDateTimeFromIcsTimeString(match.Groups[4].Value);
-            var end = GetDateTimeFromIcsTimeString(match.Groups[5].Value);
+            var start = GetDateTimeFromIcsTimeString(match.Groups[5].Value);
+            var end = GetDateTimeFromIcsTimeString(match.Groups[6].Value);
 
             var locationOffset = locationMixed.IndexOf("  Stand ");
             var location = locationMixed.Substring(0, locationOffset);
+            var desc = string.IsNullOrWhiteSpace(dozent) ? "" : "Prof: " + dozent;
 
-            return new EventEntry(name, start, end, location);
+            return new EventEntry(name, start, end, location, desc);
         }
 
         private static DateTime GetDateTimeFromIcsTimeString(string isoString)
