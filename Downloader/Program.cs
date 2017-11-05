@@ -70,7 +70,7 @@ namespace Downloader
             var additionals = await GetAdditionals(ADDITIONALS_DIRECTORY);
 
             var events = icsEvents
-               // .Concat(informatikTxtEvents)
+                // .Concat(informatikTxtEvents)
                 .Concat(additionals)
                 .Distinct()
                 .OrderBy(o => o.Name)
@@ -82,6 +82,8 @@ namespace Downloader
             Log("EventsByName: " + eventsByName.Count());
 
             Log("Save Events to " + EVENT_DIRECTORY.FullName);
+            await SaveAllEventsCsv(events);
+
             var changedFiles = await eventsByName.Select(o => SaveEventFile(o)).WhenAll();
             if (changedFiles.CountCreated() > 0)
                 Log(changedFiles.OnlyCreated().ToArrayString("Created"));
@@ -181,6 +183,16 @@ namespace Downloader
                 .Select(o => new Uri(baseUri, o));
 
             return uris.ToArray();
+        }
+
+        private static async Task SaveAllEventsCsv(IEnumerable<EventEntry> events)
+        {
+            var file = FilesystemHelper.GenerateFileInfo(EVENT_DIRECTORY, "all", ".csv");
+            var lines = events.Select(o => string.Join(';', new string[] { o.Name, o.Location, o.StartTime.ToString(), o.EndTime.ToString(), o.Description })).ToArray();
+            var headline = string.Join(';', new string[] { "Name", "Location", "StartTime", "EndTime", "Description" });
+            var content = headline + '\n' + string.Join('\n', lines);
+
+            await File.WriteAllTextAsync(file.FullName, content);
         }
 
         private static async Task<ChangedObject> SaveEventFile(IEnumerable<EventEntry> events)
