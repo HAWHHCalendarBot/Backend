@@ -187,8 +187,9 @@ namespace Downloader
 
         private static async Task SaveAllEventsCsv(IEnumerable<EventEntry> events)
         {
+            const string datetimeformat = "d MMM yyyy HH:mm";
             var file = FilesystemHelper.GenerateFileInfo(EVENT_DIRECTORY, "all", ".csv");
-            var lines = events.Select(o => string.Join(';', new string[] { o.Name, o.Location, o.StartTime.ToString(), o.EndTime.ToString(), o.Description })).ToArray();
+            var lines = events.Select(o => string.Join(';', new string[] { o.Name, o.Location, o.StartTime.ToString(datetimeformat), o.EndTime.ToString(datetimeformat), o.Description })).ToArray();
             var headline = string.Join(';', new string[] { "Name", "Location", "StartTime", "EndTime", "Description" });
             var content = headline + '\n' + string.Join('\n', lines);
 
