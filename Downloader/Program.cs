@@ -18,6 +18,7 @@ namespace Downloader
         }.Select(o => new Uri(o)).ToArray();
 
         private static readonly Uri INFORMATIK_TXT_URI = new Uri("https://www.haw-hamburg.de/fileadmin/user_upload/TI-I/Studium/Veranstaltungsplaene/Sem_I.txt");
+        private static readonly Uri KLAUSUREN_CSV_URI = new Uri("https://raw.githubusercontent.com/HAWHHCalendarBot/Klausuren/master/klausuren.csv");
 
         private static readonly DirectoryInfo BASE_DIRECTORY = new DirectoryInfo(Environment.CurrentDirectory);
         private static readonly DirectoryInfo ADDITIONALS_DIRECTORY = BASE_DIRECTORY.CreateSubdirectory("additionalEvents");
@@ -68,10 +69,14 @@ namespace Downloader
             // Log("informatik.txt Events: " + informatikTxtEvents.Length);
 
             var additionals = await GetAdditionals(ADDITIONALS_DIRECTORY);
+            Log("Additional Events: " + additionals.Length);
+            var exams = await GetExams(KLAUSUREN_CSV_URI);
+            Log("Exam Events: " + exams.Length);
 
             var events = icsEvents
                 // .Concat(informatikTxtEvents)
                 .Concat(additionals)
+                .Concat(exams)
                 .Distinct()
                 .OrderBy(o => o.Name)
                 .ThenBy(o => o.StartTime)
@@ -157,6 +162,17 @@ namespace Downloader
                 .ToArray();
 
             return addis;
+        }
+
+        private static async Task<EventEntry[]> GetExams(Uri klausurenCsvUri)
+        {
+            var csvContent = await HttpHelper.GetContent(klausurenCsvUri);
+            var lines = csvContent.Split(new char[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);
+            var exams = lines.Skip(1).Select(Exam.ParseFromCsvLine).ToArray();
+
+            var events = exams.Select(o => o.ToEventEntry()).ToArray();
+
+            return events;
         }
 
         private static async Task<Uri[]> GetEventFileUrisFromBaseUriList(IEnumerable<Uri> baseUriList)
