@@ -45,7 +45,7 @@ namespace Downloader
                 }
                 catch (Exception ex)
                 {
-                    Log(ex.ToString());
+                    Log(ex);
                 }
 
                 Log("finished with this one... now wait " + WAITTIME_BETWEEN_TWO_DOWNLOADS_IN_MINUTES + " minutes.");
@@ -56,6 +56,11 @@ namespace Downloader
         private static void Log(string text)
         {
             Console.WriteLine(text);
+        }
+
+        private static void Log(params object[] stuff)
+        {
+            Log(string.Join(' ', stuff));
         }
 
         private static async Task DoStuff()
