@@ -171,13 +171,21 @@ namespace Downloader
 
         private static async Task<EventEntry[]> GetExams(Uri klausurenCsvUri)
         {
-            var csvContent = await HttpHelper.GetContent(klausurenCsvUri);
-            var lines = csvContent.Split(new char[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);
-            var exams = lines.Skip(1).Select(Exam.ParseFromCsvLine).ToArray();
+            try
+            {
+                var csvContent = await HttpHelper.GetContent(klausurenCsvUri);
+                var lines = csvContent.Split(new char[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);
+                var exams = lines.Skip(1).Select(Exam.ParseFromCsvLine).ToArray();
 
-            var events = exams.Select(o => o.ToEventEntry()).ToArray();
+                var events = exams.Select(o => o.ToEventEntry()).ToArray();
 
-            return events;
+                return events;
+            }
+            catch (Exception ex)
+            {
+                Log(ex);
+                return new EventEntry[0];
+            }
         }
 
         private static async Task<Uri[]> GetEventFileUrisFromBaseUriList(IEnumerable<Uri> baseUriList)
