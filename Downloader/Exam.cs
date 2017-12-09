@@ -9,6 +9,7 @@ namespace Downloader
     public class Exam
     {
         private const string CSV_REGEX = @"^([^,]+),([^,]+),([^,]+),([^,]+),(""?[^""]+""?),([^,]+)";
+        private const string DATE_FORMAT = "d.MM.yyyy";
 
         public string Name;
         public DateTime StartTime;
@@ -38,7 +39,7 @@ namespace Downloader
             var prof = match.Groups[5].Value.Trim().Trim('"').Trim();
             var room = match.Groups[6].Value.Trim();
 
-            var startTime = DateTime.Parse(date).Add(TimeSpan.Parse(time));
+            var startTime = DateTime.ParseExact(date, DATE_FORMAT, null).Add(TimeSpan.Parse(time));
 
             return new Exam(name, startTime, type, prof, room);
         }
