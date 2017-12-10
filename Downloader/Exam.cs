@@ -30,18 +30,25 @@ namespace Downloader
 
         public static Exam ParseFromCsvLine(string csvLine)
         {
-            var match = new Regex(CSV_REGEX).Match(csvLine);
+            try
+            {
+                var match = new Regex(CSV_REGEX).Match(csvLine);
 
-            var name = match.Groups[1].Value.Trim();
-            var date = match.Groups[2].Value.Trim();
-            var time = match.Groups[3].Value.Trim();
-            var type = match.Groups[4].Value.Trim();
-            var prof = match.Groups[5].Value.Trim().Trim('"').Trim();
-            var room = match.Groups[6].Value.Trim();
+                var name = match.Groups[1].Value.Trim();
+                var date = match.Groups[2].Value.Trim();
+                var time = match.Groups[3].Value.Trim();
+                var type = match.Groups[4].Value.Trim();
+                var prof = match.Groups[5].Value.Trim().Trim('"').Trim();
+                var room = match.Groups[6].Value.Trim();
 
-            var startTime = DateTime.ParseExact(date, DATE_FORMAT, null).Add(TimeSpan.Parse(time));
+                var startTime = DateTime.ParseExact(date, DATE_FORMAT, null).Add(TimeSpan.Parse(time));
 
-            return new Exam(name, startTime, type, prof, room);
+                return new Exam(name, startTime, type, prof, room);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Something failed with line " + csvLine, ex);
+            }
         }
 
         public EventEntry ToEventEntry()
