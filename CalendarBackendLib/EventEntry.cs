@@ -13,6 +13,8 @@ namespace CalendarBackendLib
         public DateTime StartTime { get; set; }
         public DateTime EndTime { get; set; }
 
+        public string PrettyName { get; set; }
+
         public TimeSpan Duration => EndTime - StartTime;
         public string EventNameOnFilesystem => GetEventnameOnFilesystem(Name);
         public string Filename => GetFilename(Name);
@@ -80,7 +82,8 @@ namespace CalendarBackendLib
             return new EventEntry(Name, StartTime, EndTime)
             {
                 Description = Description,
-                Location = Location
+                Location = Location,
+                PrettyName = PrettyName
             };
         }
     }

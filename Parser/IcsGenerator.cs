@@ -36,11 +36,12 @@ END:VCALENDAR
         private static string GenerateIcsVEventOfEventEntry(EventEntry e)
         {
             const string icsDateTimeFormat = "yyyyMMddTHHmmss";
+            var name = string.IsNullOrWhiteSpace(e.PrettyName) ? e.Name : e.PrettyName;
 
             var content = new Dictionary<string, string>();
             content.Add("BEGIN", "VEVENT");
 
-            content.Add("SUMMARY", e.Name);
+            content.Add("SUMMARY", name);
             content.Add("DTSTART", e.StartTime.ToString(icsDateTimeFormat));
             content.Add("DTEND", e.EndTime.ToString(icsDateTimeFormat));
 
