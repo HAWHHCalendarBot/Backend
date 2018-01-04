@@ -58,7 +58,8 @@ namespace Downloader
             return new EventEntry(Name, StartTime, TimeSpan.Parse("2:00"))
             {
                 Description = description,
-                Location = Room
+                Location = Room,
+                PrettyName = Name + " " + Type
             };
         }
     }
