@@ -21,17 +21,15 @@ namespace CalendarBackendLib
         public EventEntry()
         { }
 
-        public EventEntry(string name, DateTime startTime, DateTime endTime, string location = "", string description = "")
+        public EventEntry(string name, DateTime startTime, DateTime endTime)
         {
             Name = name;
-            Location = location;
-            Description = description;
             StartTime = startTime;
             EndTime = endTime;
         }
 
-        public EventEntry(string name, DateTime startTime, TimeSpan duration, string location = "", string description = "")
-            : this(name, startTime, startTime + duration, location, description)
+        public EventEntry(string name, DateTime startTime, TimeSpan duration)
+            : this(name, startTime, startTime + duration)
         { }
 
 
@@ -79,7 +77,11 @@ namespace CalendarBackendLib
 
         public object Clone()
         {
-            return new EventEntry(Name, StartTime, EndTime, Location, Description);
+            return new EventEntry(Name, StartTime, EndTime)
+            {
+                Description = Description,
+                Location = Location
+            };
         }
     }
 }

@@ -5,7 +5,7 @@ using System.Text;
 
 namespace Downloader
 {
-  public  class AdditionalEvent
+    public class AdditionalEvent
     {
         public string name { get; set; }
         public string room { get; set; }
@@ -22,7 +22,11 @@ namespace Downloader
 
         public EventEntry GetEventEntry()
         {
-            return new EventEntry(name, StartTime, EndTime, room, "Dies ist eine zusätzliche, inoffizielle Veranstaltung.");
+            return new EventEntry(name, StartTime, EndTime)
+            {
+                Description = "Dies ist eine zusätzliche, inoffizielle Veranstaltung.",
+                Location = room
+            };
         }
     }
 }

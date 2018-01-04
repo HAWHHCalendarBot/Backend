@@ -55,7 +55,11 @@ namespace Downloader
         {
             var description = Type + "\nProf: " + Prof;
 
-            return new EventEntry(Name, StartTime, TimeSpan.Parse("2:00"), Room, description);
+            return new EventEntry(Name, StartTime, TimeSpan.Parse("2:00"))
+            {
+                Description = description,
+                Location = Room
+            };
         }
     }
 }

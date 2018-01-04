@@ -108,7 +108,11 @@ namespace Downloader
 
             var desc = string.IsNullOrWhiteSpace(dozent) ? "" : "Prof: " + dozent;
 
-            return new EventEntry(name, start, end, room, desc);
+            return new EventEntry(name, start, end)
+            {
+                Description = desc,
+                Location = room
+            };
         }
     }
 }

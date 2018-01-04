@@ -35,7 +35,11 @@ namespace Downloader
             var location = locationMixed.Substring(0, locationOffset);
             var desc = string.IsNullOrWhiteSpace(dozent) ? "" : "Prof: " + dozent;
 
-            return new EventEntry(name, start, end, location, desc);
+            return new EventEntry(name, start, end)
+            {
+                Description = desc,
+                Location = location
+            };
         }
 
         private static DateTime GetDateTimeFromIcsTimeString(string isoString)
