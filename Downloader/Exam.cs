@@ -53,7 +53,7 @@ namespace Downloader
 
         public EventEntry ToEventEntry()
         {
-            var description = Type + "\nProf: " + Prof;
+            var description = Type + "\nProf: " + Prof + "\n\nViel Erfolg!";
 
             return new EventEntry(Name, StartTime, TimeSpan.Parse("2:00"))
             {
