@@ -45,7 +45,7 @@ END:VCALENDAR
             content.Add("DTEND", e.EndTime.ToString(icsDateTimeFormat));
 
             if (!string.IsNullOrWhiteSpace(e.Location))
-                content.Add("LOCATION", e.Location);
+                content.Add("LOCATION", e.Location.Replace(",", "\\,")); // , has to be escaped in the LOCATION field
             if (!string.IsNullOrWhiteSpace(e.Description))
                 content.Add("DESCRIPTION", e.Description.Replace("\n", "\\n"));
 
