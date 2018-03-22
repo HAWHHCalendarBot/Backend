@@ -53,7 +53,13 @@ namespace Downloader
 
         public EventEntry ToEventEntry()
         {
-            var description = Type + "\nProf: " + Prof + "\n\nViel Erfolg!";
+            var description = Type;
+            description += "\nProf: " + Prof;
+
+            description += "\n\nDiese Prüfung wurde über ein Gemeinschaftsprojekt eingetragen. Wenn diese Information nicht ganz aktuell ist, aktualisiere dies hier: https://github.com/HAWHHCalendarBot/Klausuren";
+            description += "\nDanke für deine Mithilfe!";
+
+            description+= "\n\nViel Erfolg!";
 
             return new EventEntry(Name, StartTime, TimeSpan.Parse("2:00"))
             {
