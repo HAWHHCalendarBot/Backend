@@ -48,6 +48,7 @@ namespace Parser
         internal DateTime DateParsed => DateTime.Parse(date);
 
         public bool remove { get; set; }
+        public string room { get; set; }
         public string starttime { get; set; }
         public string endtime { get; set; }
     }

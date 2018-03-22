@@ -190,6 +190,11 @@ namespace Parser
 
             changedEvent.Name = "✏️ " + original.Name;
 
+            if (!string.IsNullOrWhiteSpace(change.room))
+            {
+                changedEvent.Location = change.room;
+            }
+
             if (!string.IsNullOrWhiteSpace(change.starttime))
             {
                 changedEvent.StartTime = original.StartTime.Date.Add(TimeSpan.Parse(change.starttime));
