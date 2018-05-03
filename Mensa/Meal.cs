@@ -11,7 +11,7 @@ namespace Mensa
         public double PriceStudent;
         public double PriceAttendant;
         public double PriceGuest;
-        public Dictionary<int, string> Additives;
+        public Dictionary<string, string> Additives;
 
         public bool Pig;
         public bool Beef;
@@ -34,7 +34,7 @@ namespace Mensa
             PriceAttendant = priceAttendant;
             PriceGuest = priceGuest;
 
-            Additives = new Dictionary<int, string>();
+            Additives = new Dictionary<string, string>();
         }
 
         public override string ToString()

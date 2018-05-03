@@ -14,7 +14,7 @@ namespace Mensa
         private static readonly Regex MEAL_SWITCH_REGEX = new Regex(@"<\/p>");
         private static readonly Regex DAY_SWITCH_REGEX = new Regex(@"<\/td>");
         private static readonly Regex NAME_REGEX = new Regex(@"<strong>(.+)<\/strong>");
-        private static readonly Regex ADDITIVE_REPLACE_REGEX = new Regex(@"<span class=tooltip title=([^>]+)>(\d+)<\/span>");
+        private static readonly Regex ADDITIVE_REPLACE_REGEX = new Regex(@"<span class=tooltip title=([^>]+)>([^<]+)<\/span>");
         private static readonly Regex PRICE_REGEX = new Regex(@"([\d,]+).€ \/ ([\d,]+).€ \/ ([\d,]+).€");
         private static readonly Regex BONUS_REGEX = new Regex(@"<img .+ title=.([^""]+).+\/>");
 
@@ -31,7 +31,7 @@ namespace Mensa
             var name = "";
             var prices = new double[3];
             var boniTexts = new List<string>();
-            var additives = new Dictionary<int, string>();
+            var additives = new Dictionary<string, string>();
 
             foreach (var line in lines)
             {
@@ -63,7 +63,7 @@ namespace Mensa
                     name = "";
                     prices = new double[3];
                     boniTexts = new List<string>();
-                    additives = new Dictionary<int, string>();
+                    additives = new Dictionary<string, string>();
                 }
                 else if (DAY_SWITCH_REGEX.IsMatch(line))
                 {
@@ -71,14 +71,14 @@ namespace Mensa
                     name = "";
                     prices = new double[3];
                     boniTexts = new List<string>();
-                    additives = new Dictionary<int, string>();
+                    additives = new Dictionary<string, string>();
                 }
                 else if (NAME_REGEX.IsMatch(line))
                 {
                     var nameHtml = NAME_REGEX.Match(line).Groups[1].Value;
                     additives = ADDITIVE_REPLACE_REGEX.Matches(nameHtml)
                         .OfType<Match>()
-                        .Select(o => new KeyValuePair<int, string>(int.Parse(o.Groups[2].Value), o.Groups[1].Value))
+                        .Select(o => new KeyValuePair<string, string>(o.Groups[2].Value, o.Groups[1].Value))
                         .Distinct()
                         .ToDictionary();
 
