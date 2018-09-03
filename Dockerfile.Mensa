@@ -1,9 +1,10 @@
 FROM microsoft/dotnet:2-sdk
 
+COPY CalendarBackendLib /app/CalendarBackendLib
+
 WORKDIR /app/Mensa
 VOLUME /app/Mensa/meals
 
-COPY CalendarBackendLib /app/CalendarBackendLib
 COPY Mensa/Mensa.csproj ./
 RUN dotnet restore
 

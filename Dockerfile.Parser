@@ -1,11 +1,12 @@
 FROM microsoft/dotnet:2-sdk
 
+COPY CalendarBackendLib /app/CalendarBackendLib
+
 WORKDIR /app/Parser
 VOLUME /app/Parser/calendars
 VOLUME /app/Parser/eventfiles
 VOLUME /app/Parser/userconfig
 
-COPY CalendarBackendLib /app/CalendarBackendLib
 COPY Parser/Parser.csproj ./
 RUN dotnet restore
 
