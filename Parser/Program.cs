@@ -192,7 +192,7 @@ namespace Parser
             {
                 if (showRemovedEvents)
                 {
-                    changedEvent.Name = "🚫 " + original.Name;
+                    changedEvent.PrettyName = "🚫 " + original.Name;
                     return changedEvent;
                 }
                 else
@@ -201,8 +201,12 @@ namespace Parser
                 }
             }
 
-            changedEvent.Name = "✏️ " + original.Name;
+            changedEvent.PrettyName = "✏️ " + original.Name;
 
+            if (!string.IsNullOrWhiteSpace(change.namesuffix))
+            {
+                changedEvent.PrettyName += " " + change.namesuffix;
+            }
             if (!string.IsNullOrWhiteSpace(change.room))
             {
                 changedEvent.Location = change.room;
