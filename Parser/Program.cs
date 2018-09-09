@@ -62,7 +62,7 @@ namespace Parser
                         lastGeneration = preScan;
                     }
 
-                    DeleteNotAnymoreNeededCalendars();
+                    await DeleteNotAnymoreNeededCalendars();
                 }
                 catch (Exception ex)
                 {
@@ -76,6 +76,17 @@ namespace Parser
         private static void Log(string text)
         {
             Console.WriteLine(text);
+        }
+
+        private static FileInfo GetCalendarFileOfUser(Userconfig config)
+        {
+            var filename = config.chat.id.ToString();
+            if (!string.IsNullOrWhiteSpace(config.config.calendarfileSuffix))
+            {
+                filename += "-" + config.config.calendarfileSuffix;
+            }
+            var file = FilesystemHelper.GenerateFileInfo(CALENDAR_DIRECTORY, filename, ".ics");
+            return file;
         }
 
         private static Userconfig[] GetUserconfigsThatNeedEventFile(Userconfig[] userconfigs, FileInfo eventFile)
@@ -94,21 +105,23 @@ namespace Parser
             await GenerateSetOfUserconfigs(userconfigs);
         }
 
-        private static void DeleteNotAnymoreNeededCalendars()
+        private static async Task DeleteNotAnymoreNeededCalendars()
         {
-            var generatedCalendars = USERCONFIG_DIRECTORY.EnumerateFiles()
-                .Select(o => o.Name.Replace(".json", ".ics"))
+            var userconfigs = await GetAllUserconfigs();
+            var neededFiles = userconfigs
+                .Select(o => GetCalendarFileOfUser(o))
+                .Select(o => o.Name)
                 .ToArray();
 
-            var calendarsToDelete = CALENDAR_DIRECTORY.EnumerateFiles()
-                .Where(o => !generatedCalendars.Contains(o.Name))
+            var unneededFiles = CALENDAR_DIRECTORY.EnumerateFiles()
+                .Where(o => !neededFiles.Contains(o.Name))
                 .ToArray();
 
-            if (calendarsToDelete.Length == 0)
+            if (unneededFiles.Length == 0)
                 return;
 
-            Log(calendarsToDelete.ToArrayString("delete"));
-            foreach (var item in calendarsToDelete)
+            Log(unneededFiles.ToArrayString("delete"));
+            foreach (var item in unneededFiles)
             {
                 item.Delete();
             }
@@ -136,16 +149,16 @@ namespace Parser
         private static async Task<ChangedObject> GenerateCalendar(Userconfig config)
         {
             var events = config.config.events.Concat(config.config.additionalEvents ?? new string[0]).Distinct().ToArray();
-            return await GenerateCalendar(config.chat.first_name, config.chat.id.ToString(), events, config.config.changes, config.config.showRemovedEvents);
+            var file = GetCalendarFileOfUser(config);
+            return await GenerateCalendar(config.chat.first_name, file, events, config.config.changes, config.config.showRemovedEvents);
         }
 
-        private static async Task<ChangedObject> GenerateCalendar(string name, string filename, string[] eventnames, IEnumerable<Change> changes, bool showRemovedEvents)
+        private static async Task<ChangedObject> GenerateCalendar(string name, FileInfo file, string[] eventnames, IEnumerable<Change> changes, bool showRemovedEvents)
         {
             var allEvents = await LoadEventsByName(eventnames);
             var events = ApplyChanges(allEvents, changes, showRemovedEvents);
 
             var icsContent = IcsGenerator.GenerateIcsContent(name, events);
-            var file = FilesystemHelper.GenerateFileInfo(CALENDAR_DIRECTORY, filename, ".ics");
 
             var result = await FilesystemHelper.WriteAllTextAsyncOnlyWhenChanged(file, icsContent);
             return new ChangedObject(name, result.ChangeState);
