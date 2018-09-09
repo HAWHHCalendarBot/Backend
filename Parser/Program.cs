@@ -166,16 +166,57 @@ namespace Parser
 
         private static EventEntry[] ApplyChanges(IEnumerable<EventEntry> events, IEnumerable<Change> changes, bool showRemovedEvents)
         {
+            if (changes == null)
+            {
+                return events
+                    .ToArray();
+            }
+
+            var modifyChanges = changes
+                .Where(o => !o.add)
+                .ToArray();
+
+            var addChanges = changes
+                .Where(o => o.add)
+                .ToArray();
+
+            var additionalEvents = addChanges
+                .Select(o => AddChange(o))
+                .ToArray();
+
             var result = events
                .Select(e =>
                 {
-                    var changeOfEvent = changes?.SingleOrDefault(o => o.name == e.Name && o.DateParsed == e.StartTime);
+                    var changeOfEvent = modifyChanges.SingleOrDefault(o => o.name == e.Name && o.DateParsed == e.StartTime);
                     return ApplyChange(e, changeOfEvent, showRemovedEvents);
                 })
+                .Concat(additionalEvents)
                 .Where(o => o != null)
                 .ToArray();
 
             return result;
+        }
+
+        private static EventEntry AddChange(Change change)
+        {
+            var name = change.name;
+            var startTime = change.DateParsed;
+            var endTime = change.DateParsed.Date.Add(TimeSpan.Parse(change.endtime));
+
+            var eventEntry = new EventEntry(name, startTime, endTime);
+            eventEntry.Description += "Diese Veranstaltung wurde nachträglich von dir hinzugefügt. Nutze 'Veranstaltungsänderungen' im Bot um dies anzupassen.\nhttps://t.me/HAWHHCalendarBot";
+
+            eventEntry.PrettyName = "➕ " + name;
+
+            if (!string.IsNullOrWhiteSpace(change.namesuffix))
+            {
+                eventEntry.PrettyName += " " + change.namesuffix;
+            }
+            if (!string.IsNullOrWhiteSpace(change.room))
+            {
+                eventEntry.Location = change.room;
+            }
+            return eventEntry;
         }
 
         private static EventEntry ApplyChange(EventEntry original, Change change, bool showRemovedEvents)
@@ -186,7 +227,7 @@ namespace Parser
 
             if (!string.IsNullOrWhiteSpace(original.Description))
                 changedEvent.Description += "\n\n";
-            changedEvent.Description += "Diese Veranstaltung wurde nachträglich von dir verändert. Nutze /changes im Bot um dies anzupassen.\nhttps://t.me/HAWHHCalendarBot";
+            changedEvent.Description += "Diese Veranstaltung wurde nachträglich von dir verändert. Nutze 'Veranstaltungsänderungen' im Bot um dies anzupassen.\nhttps://t.me/HAWHHCalendarBot";
 
             if (change.remove)
             {
