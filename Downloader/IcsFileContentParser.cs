@@ -9,7 +9,7 @@ namespace Downloader
 {
     internal static class IcsFileContentParser
     {
-        private static readonly Regex EVENT_REGEX = new Regex(@"BEGIN:VEVENT\nSUMMARY:(.+)\nLOCATION:(.+)\n(?:DESCRIPTION:(.+)\n)?UID:(.+)\nDTSTART;TZID=Europe\/Berlin:(.+)\nDTEND;TZID=Europe\/Berlin:(.+)\nEND:VEVENT");
+        private static readonly Regex EVENT_REGEX = new Regex(@"BEGIN:VEVENT\nSUMMARY:(.+)\nLOCATION:(.+)\n(?:DESCRIPTION:(.*)\n)?UID:(.+)\nDTSTART;TZID=Europe\/Berlin:(.+)\nDTEND;TZID=Europe\/Berlin:(.+)\nEND:VEVENT");
 
         internal static EventEntry[] GetEvents(string icsFileContent)
         {
