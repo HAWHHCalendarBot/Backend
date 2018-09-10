@@ -53,7 +53,9 @@ namespace Downloader
                 throw new NotImplementedException();
             }
 
-            return events.ToArray();
+            return events
+                .Distinct()
+                .ToArray();
         }
 
         private static int[] GetWeeksFromWeekList(string weekList)
