@@ -5,9 +5,12 @@ using System.Text;
 
 namespace CalendarBackendLib
 {
+    public enum EventStatus { Confirmed, Tentative, Cancelled }
+
     public class EventEntry : ICloneable
     {
         public string Name { get; set; }
+        public EventStatus Status { get; set; }
         public string Location { get; set; }
         public string Description { get; set; }
         public DateTime StartTime { get; set; }
@@ -23,15 +26,16 @@ namespace CalendarBackendLib
         public EventEntry()
         { }
 
-        public EventEntry(string name, DateTime startTime, DateTime endTime)
+        public EventEntry(string name, DateTime startTime, DateTime endTime, EventStatus status = EventStatus.Confirmed)
         {
             Name = name;
+            Status = status;
             StartTime = startTime;
             EndTime = endTime;
         }
 
-        public EventEntry(string name, DateTime startTime, TimeSpan duration)
-            : this(name, startTime, startTime + duration)
+        public EventEntry(string name, DateTime startTime, TimeSpan duration, EventStatus status = EventStatus.Confirmed)
+            : this(name, startTime, startTime + duration, status)
         { }
 
 
@@ -53,6 +57,7 @@ namespace CalendarBackendLib
             }
 
             if (Name != other.Name) return false;
+            if (Status != other.Status) return false;
             if (StartTime != other.StartTime) return false;
             if (EndTime != other.EndTime) return false;
             if (Description != other.Description) return false;
@@ -79,7 +84,7 @@ namespace CalendarBackendLib
 
         public object Clone()
         {
-            return new EventEntry(Name, StartTime, EndTime)
+            return new EventEntry(Name, StartTime, EndTime, Status)
             {
                 Description = Description,
                 Location = Location,

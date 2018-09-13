@@ -231,6 +231,7 @@ namespace Parser
 
             if (change.remove)
             {
+                changedEvent.Status = EventStatus.Cancelled;
                 if (showRemovedEvents)
                 {
                     changedEvent.PrettyName = "🚫 " + original.Name;

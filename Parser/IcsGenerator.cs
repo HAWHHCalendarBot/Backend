@@ -59,6 +59,8 @@ END:VCALENDAR
 
             var content = new Dictionary<string, string>();
             content.Add("BEGIN", "VEVENT");
+            content.Add("TRANSP", "OPAQUE");
+            content.Add("STATUS", e.Status.ToString().ToUpper());
 
             content.Add("SUMMARY", name);
             content.Add("DTSTART;TZID=Europe/Berlin", e.StartTime.ToString(icsDateTimeFormat));
