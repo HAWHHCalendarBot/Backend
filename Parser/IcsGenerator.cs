@@ -12,7 +12,26 @@ namespace Parser
 VERSION:2.0
 METHOD:PUBLISH
 PRODID:https://calendarbot.hawhh.de
-X-WR-TIMEZONE:Europe/Berlin
+";
+
+        private const string ICS_TIMEZONE = @"BEGIN:VTIMEZONE
+TZID:Europe/Berlin
+X-LIC-LOCATION:Europe/Berlin
+BEGIN:DAYLIGHT
+TZOFFSETFROM:+0100
+TZOFFSETTO:+0200
+TZNAME:CEST
+DTSTART:19700329T020000
+RRULE:FREQ=YEARLY;INTERVAL=1;BYDAY=-1SU;BYMONTH=3
+END:DAYLIGHT
+BEGIN:STANDARD
+TZOFFSETFROM:+0200
+TZOFFSETTO:+0100
+TZNAME:CET
+DTSTART:19701025T030000
+RRULE:FREQ=YEARLY;INTERVAL=1;BYDAY=-1SU;BYMONTH=10
+END:STANDARD
+END:VTIMEZONE
 ";
 
         private const string ICS_SUFFIX = @"
@@ -22,8 +41,8 @@ END:VCALENDAR
         public static string GenerateIcsContent(string calendarName, IEnumerable<EventEntry> events)
         {
             var icsContent = ICS_PREFIX.Replace("\r\n", "\n");
-
             icsContent += "X-WR-CALNAME:@HAWHHCalendarBot (" + calendarName + ")\n";
+            icsContent += ICS_TIMEZONE.Replace("\r\n", "\n");
 
             icsContent += string.Join("\n", events.Select(GenerateIcsVEventOfEventEntry));
             icsContent += ICS_SUFFIX;
@@ -42,8 +61,8 @@ END:VCALENDAR
             content.Add("BEGIN", "VEVENT");
 
             content.Add("SUMMARY", name);
-            content.Add("DTSTART", e.StartTime.ToString(icsDateTimeFormat));
-            content.Add("DTEND", e.EndTime.ToString(icsDateTimeFormat));
+            content.Add("DTSTART;TZID=Europe/Berlin", e.StartTime.ToString(icsDateTimeFormat));
+            content.Add("DTEND;TZID=Europe/Berlin", e.EndTime.ToString(icsDateTimeFormat));
 
             if (!string.IsNullOrWhiteSpace(e.Location))
                 content.Add("LOCATION", e.Location.Replace(",", "\\,")); // , has to be escaped in the LOCATION field
