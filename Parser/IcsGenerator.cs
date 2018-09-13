@@ -69,6 +69,7 @@ END:VCALENDAR
             if (!string.IsNullOrWhiteSpace(e.Description))
                 content.Add("DESCRIPTION", e.Description.Replace("\n", "\\n"));
 
+            content.Add("URL;VALUE=URI", "https://t.me/HAWHHCalendarBot");
             content.Add("UID", GetHashString(e) + "@calendarbot.hawhh.de");
             content.Add("END", "VEVENT");
 
