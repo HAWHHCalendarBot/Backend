@@ -231,16 +231,15 @@ namespace Parser
 
             if (change.remove)
             {
-                changedEvent.Status = EventStatus.Cancelled;
                 if (showRemovedEvents)
                 {
                     changedEvent.PrettyName = "🚫 " + original.Name;
-                    return changedEvent;
                 }
                 else
                 {
-                    return null;
+                    changedEvent.Status = EventStatus.Cancelled;
                 }
+                return changedEvent;
             }
 
             changedEvent.PrettyName = "✏️ " + original.Name;
