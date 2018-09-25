@@ -25,6 +25,7 @@ namespace Mensa
             var lines = source
                 .Split(new string[] { "\r", "\n" }, StringSplitOptions.RemoveEmptyEntries)
                 .Select(o => o.Trim())
+                .Where(o => !string.IsNullOrWhiteSpace(o))
                 .ToArray();
 
             var currentWeekday = DayOfWeek.Monday;
@@ -41,7 +42,7 @@ namespace Mensa
                 }
                 else if (MEAL_SWITCH_REGEX.IsMatch(line))
                 {
-                    if (string.IsNullOrWhiteSpace(name) || prices[0] == 0 || prices[1] == 0 || prices[2] == 0)
+                    if (string.IsNullOrWhiteSpace(name) || prices.Length != 3 || prices.All(o => o == 0))
                         continue;
 
                     var day = CalendarHelper.DateOfWeekDayISO8601(year, week, currentWeekday);
