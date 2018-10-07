@@ -150,13 +150,13 @@ namespace Parser
         {
             var events = config.config.events.Concat(config.config.additionalEvents ?? new string[0]).Distinct().ToArray();
             var file = GetCalendarFileOfUser(config);
-            return await GenerateCalendar(config.chat.first_name, file, events, config.config.changes, config.config.showRemovedEvents);
+            return await GenerateCalendar(config.chat.first_name, file, events, config.config.changes, config.config.removedEvents);
         }
 
-        private static async Task<ChangedObject> GenerateCalendar(string name, FileInfo file, string[] eventnames, IEnumerable<Change> changes, bool showRemovedEvents)
+        private static async Task<ChangedObject> GenerateCalendar(string name, FileInfo file, string[] eventnames, IEnumerable<Change> changes, string removedEvents)
         {
             var allEvents = await LoadEventsByName(eventnames);
-            var events = ApplyChanges(allEvents, changes, showRemovedEvents);
+            var events = ApplyChanges(allEvents, changes, removedEvents);
 
             var icsContent = IcsGenerator.GenerateIcsContent(name, events);
 
@@ -164,7 +164,7 @@ namespace Parser
             return new ChangedObject(name, result.ChangeState);
         }
 
-        private static EventEntry[] ApplyChanges(IEnumerable<EventEntry> events, IEnumerable<Change> changes, bool showRemovedEvents)
+        private static EventEntry[] ApplyChanges(IEnumerable<EventEntry> events, IEnumerable<Change> changes, string removedEvents)
         {
             if (changes == null)
             {
@@ -188,7 +188,7 @@ namespace Parser
                .Select(e =>
                 {
                     var changeOfEvent = modifyChanges.SingleOrDefault(o => o.name == e.Name && o.DateParsed == e.StartTime);
-                    return ApplyChange(e, changeOfEvent, showRemovedEvents);
+                    return ApplyChange(e, changeOfEvent, removedEvents);
                 })
                 .Concat(additionalEvents)
                 .Where(o => o != null)
@@ -219,7 +219,7 @@ namespace Parser
             return eventEntry;
         }
 
-        private static EventEntry ApplyChange(EventEntry original, Change change, bool showRemovedEvents)
+        private static EventEntry ApplyChange(EventEntry original, Change change, string removedEvents)
         {
             if (change == null) return original;
 
@@ -231,13 +231,17 @@ namespace Parser
 
             if (change.remove)
             {
-                if (showRemovedEvents)
+                switch (removedEvents)
                 {
-                    changedEvent.PrettyName = "🚫 " + original.Name;
-                }
-                else
-                {
-                    changedEvent.Status = EventStatus.Cancelled;
+                    case "emoji":
+                        changedEvent.PrettyName = "🚫 " + original.Name;
+                        break;
+                    case "remove":
+                        return null;
+                    case "cancelled":
+                    default:
+                        changedEvent.Status = EventStatus.Cancelled;
+                        break;
                 }
                 return changedEvent;
             }

@@ -37,7 +37,7 @@ namespace Parser
         public string[] events { get; set; }
 
         public bool admin { get; set; }
-        public bool showRemovedEvents { get; set; }
+        public string removedEvents { get; set; }
         public bool stisysUpdate { get; set; }
         public string calendarfileSuffix { get; set; }
     }
