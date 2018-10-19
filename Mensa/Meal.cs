@@ -7,6 +7,7 @@ namespace Mensa
     public class Meal
     {
         public string Name;
+        public string Category;
         public DateTime Date;
         public double PriceStudent;
         public double PriceAttendant;
@@ -26,9 +27,10 @@ namespace Mensa
         public Meal()
         { }
 
-        public Meal(string name, DateTime date, double priceStudent, double priceAttendant, double priceGuest)
+        public Meal(string name, string category, DateTime date, double priceStudent, double priceAttendant, double priceGuest)
         {
             Name = name;
+            Category = category;
             Date = date;
             PriceStudent = priceStudent;
             PriceAttendant = priceAttendant;

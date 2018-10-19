@@ -10,7 +10,7 @@ namespace Mensa
 {
     internal class CanteenWeekViewParser
     {
-        private static readonly Regex CATEGORY_COLUMN_REGEX = new Regex(@"<th class=.category.>");
+        private static readonly Regex CATEGORY_COLUMN_REGEX = new Regex(@"<th class=.category.>([^<]+)<");
         private static readonly Regex MEAL_SWITCH_REGEX = new Regex(@"<\/p>");
         private static readonly Regex DAY_SWITCH_REGEX = new Regex(@"<\/td>");
         private static readonly Regex NAME_REGEX = new Regex(@"<strong>(.+)<\/strong>");
@@ -29,6 +29,7 @@ namespace Mensa
                 .ToArray();
 
             var currentWeekday = DayOfWeek.Monday;
+            var currentCategory = "";
             var name = "";
             var prices = new double[3];
             var boniTexts = new List<string>();
@@ -39,6 +40,7 @@ namespace Mensa
                 if (CATEGORY_COLUMN_REGEX.IsMatch(line))
                 {
                     currentWeekday = DayOfWeek.Monday;
+                    currentCategory = CATEGORY_COLUMN_REGEX.Match(line).Groups[1].Value;
                 }
                 else if (MEAL_SWITCH_REGEX.IsMatch(line))
                 {
@@ -46,7 +48,7 @@ namespace Mensa
                         continue;
 
                     var day = CalendarHelper.DateOfWeekDayISO8601(year, week, currentWeekday);
-                    var meal = new Meal(name, day, prices[0], prices[1], prices[2]);
+                    var meal = new Meal(name, currentCategory, day, prices[0], prices[1], prices[2]);
 
                     meal.Additives = additives;
 
