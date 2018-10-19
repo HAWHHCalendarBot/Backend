@@ -93,11 +93,10 @@ namespace Mensa
 
         private static async Task SaveMealsOfCanteenDay(Canteen canteen, DateTime day, DirectoryInfo folder, IEnumerable<Meal> meals)
         {
-            var json = JsonHelper.ConvertToJson(meals);
             var filename = day.ToString("yyyyMMdd");
             var file = FilesystemHelper.GenerateFileInfo(folder, filename, ".json");
 
-            await File.WriteAllTextAsync(file.FullName, json);
+            await JsonHelper.ConvertToJsonAsync(file, meals);
         }
     }
 }

@@ -19,6 +19,18 @@ namespace CalendarBackendLib
             }
         }
 
+        public static void ConvertToJson<T>(FileInfo file, T obj)
+        {
+            var content = ConvertToJson(obj);
+            File.WriteAllText(file.FullName, content);
+        }
+
+        public static async Task ConvertToJsonAsync<T>(FileInfo file, T obj)
+        {
+            var content = ConvertToJson(obj);
+            await File.WriteAllTextAsync(file.FullName, content);
+        }
+
         public static T ConvertFromJson<T>(string jsonString)
         {
             using (var ms = new MemoryStream(Encoding.UTF8.GetBytes(jsonString)))
