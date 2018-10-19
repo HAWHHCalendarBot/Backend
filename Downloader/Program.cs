@@ -229,15 +229,10 @@ namespace Downloader
         {
             var filename = events.First().Filename;
             var eventFile = FilesystemHelper.GenerateFileInfo(EVENT_DIRECTORY, filename);
-            var content = GenerateFileJSONContent(events);
+            var content = JsonHelper.ConvertToJson(events);
 
             var result = await FilesystemHelper.WriteAllTextAsyncOnlyWhenChanged(eventFile, content);
             return new ChangedObject(filename, result.ChangeState);
-        }
-
-        private static string GenerateFileJSONContent(IEnumerable<EventEntry> events)
-        {
-            return JsonHelper.ConvertToJson(events);
         }
     }
 }
