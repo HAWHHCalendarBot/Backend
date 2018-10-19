@@ -12,8 +12,11 @@ namespace CalendarBackendLib
         {
             using (var ms = new MemoryStream())
             {
-                var serializer = new DataContractJsonSerializer(typeof(T));
-                serializer.WriteObject(ms, obj);
+                using (var writer = JsonReaderWriterFactory.CreateJsonWriter(ms, Encoding.UTF8, true, true, "  "))
+                {
+                    new DataContractJsonSerializer(typeof(T)).WriteObject(writer, obj);
+                    writer.Flush();
+                }
                 string jsonString = Encoding.UTF8.GetString(ms.ToArray());
                 return jsonString;
             }
