@@ -96,7 +96,17 @@ namespace Mensa
             var filename = day.ToString("yyyyMMdd");
             var file = FilesystemHelper.GenerateFileInfo(folder, filename, ".json");
 
-            await JsonHelper.ConvertToJsonAsync(file, meals);
+            var categories = meals
+                .Select(o => o.Category)
+                .Distinct()
+                .ToArray();
+
+            var dataToSave = meals
+                .OrderBy(o => Array.IndexOf(categories, o.Category))
+                .ThenBy(o => o.Name)
+                .ToArray();
+
+            await JsonHelper.ConvertToJsonAsync(file, dataToSave);
         }
     }
 }
