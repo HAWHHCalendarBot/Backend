@@ -102,7 +102,7 @@ END:VCALENDAR
 
         private static string StringToHexHash(string content)
         {
-            var val = content
+            var val = (content ?? string.Empty)
                 .Select(o => Convert.ToDouble((int)o))
                 .Sum();
 

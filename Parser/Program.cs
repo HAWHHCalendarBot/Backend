@@ -205,16 +205,13 @@ namespace Parser
 
             var eventEntry = new EventEntry(name, startTime, endTime);
             eventEntry.Description += "Diese Veranstaltung wurde nachträglich von dir hinzugefügt. Nutze 'Veranstaltungsänderungen' im Bot um dies anzupassen.\nhttps://t.me/HAWHHCalendarBot";
+            eventEntry.Location = change.room ?? string.Empty;
 
             eventEntry.PrettyName = "➕ " + name;
 
             if (!string.IsNullOrWhiteSpace(change.namesuffix))
             {
                 eventEntry.PrettyName += " " + change.namesuffix;
-            }
-            if (!string.IsNullOrWhiteSpace(change.room))
-            {
-                eventEntry.Location = change.room;
             }
             return eventEntry;
         }
