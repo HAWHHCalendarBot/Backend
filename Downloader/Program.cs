@@ -138,21 +138,20 @@ namespace Downloader
             uris = uris.ToArray();
             Log("got list of ics uris: " + uris.Length);
 
-            var fileContent = (await uris.Select(async o =>
+            var fileContent = new List<string>();
+            foreach (var o in uris)
             {
                 try
                 {
-                    return await o.GetContent(HAW_FILE_ENCODING);
+                    fileContent.Add(await o.GetContent(HAW_FILE_ENCODING));
                 }
                 catch (Exception ex)
                 {
                     Log("ics load failed", o, ex.Message);
-                    return null;
                 }
-            }).WhenAll())
-                .Where(o => o != null)
-                .ToArray();
-            Log("got ics files: " + fileContent.Length);
+            }
+
+            Log("got ics files: " + fileContent.Count());
             var formattedContent = fileContent.Select(s => s.Replace("\r\n", "\n"));
             var events = formattedContent
                 .SelectMany(o => IcsFileContentParser.GetEvents(o))
