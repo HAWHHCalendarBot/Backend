@@ -14,7 +14,7 @@ namespace Downloader
     {
         private static readonly Uri[] SOURCE_URIS = new string[] {
             "https://userdoc.informatik.haw-hamburg.de/doku.php?id=stundenplan:ics_public",
-            "http://www.etech.haw-hamburg.de/Stundenplan/ICS/"
+            "https://www.haw-hamburg.de/ti-ie/studium/kalenderdateien.html"
         }.Select(o => new Uri(o)).ToArray();
 
         private static readonly Uri INFORMATIK_TXT_URI = new Uri("https://www.haw-hamburg.de/fileadmin/user_upload/TI-I/Studium/Veranstaltungsplaene/Sem_I.txt");
