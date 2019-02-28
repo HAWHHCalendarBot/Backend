@@ -32,10 +32,14 @@ namespace CalendarBackendLib
         {
             using (var client = GetHttpClient())
             {
-                var byteContent = await client.GetByteArrayAsync(uri);
-                var content = encoding.GetString(byteContent);
+                try {
+                    var byteContent = await client.GetByteArrayAsync(uri);
+                    var content = encoding.GetString(byteContent);
 
-                return content;
+                    return content;
+                } catch (Exception ex) {
+                    throw new Exception("url load failed " + uri.ToString(), ex);
+                }
             }
         }
     }
