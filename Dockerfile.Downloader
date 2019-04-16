@@ -3,7 +3,6 @@ FROM microsoft/dotnet:2-sdk
 COPY CalendarBackendLib /app/CalendarBackendLib
 
 WORKDIR /app/Downloader
-VOLUME /app/Downloader/additionalEvents
 VOLUME /app/Downloader/eventfiles
 
 COPY Downloader/Downloader.csproj ./
