@@ -32,7 +32,6 @@ namespace Parser
 
     public class Config
     {
-        public string[] additionalEvents { get; set; }
         public Change[] changes { get; set; }
         public string[] events { get; set; }
 
