@@ -24,7 +24,7 @@ namespace Downloader
         {
             return new EventEntry(name, StartTime, EndTime)
             {
-                Description = "Dies ist eine zusätzliche, inoffizielle Veranstaltung.",
+                Description = "Dies ist eine zusätzliche, inoffizielle Veranstaltung: https://github.com/HAWHHCalendarBot/AdditionalEvents",
                 Location = room
             };
         }
