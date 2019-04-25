@@ -1,4 +1,5 @@
 ﻿using CalendarBackendLib;
+using LibGit2Sharp;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -21,7 +22,7 @@ namespace Downloader
         private static readonly Uri KLAUSUREN_CSV_URI = new Uri("https://raw.githubusercontent.com/HAWHHCalendarBot/Klausuren/master/klausuren.csv");
 
         private static readonly DirectoryInfo BASE_DIRECTORY = new DirectoryInfo(Environment.CurrentDirectory);
-        private static readonly DirectoryInfo ADDITIONALS_DIRECTORY = BASE_DIRECTORY.CreateSubdirectory("additionalEvents");
+        private static readonly DirectoryInfo ADDITIONALS_GITHUB_TEMP_DIRECTORY = BASE_DIRECTORY.CreateSubdirectory("additionalEventsGithub");
 
         private static readonly Regex ICS_LINK_REGEX = new Regex(@"href=""(\S+\.ics)""");
         private static readonly Encoding HAW_FILE_ENCODING = Encoding.GetEncoding("iso-8859-1");
@@ -73,7 +74,7 @@ namespace Downloader
             //var informatikTxtEvents = await GetInformatikTxtEvents(INFORMATIK_TXT_URI);
             //Log("informatik.txt Events: " + informatikTxtEvents.Length);
 
-            var additionals = await GetAdditionals(ADDITIONALS_DIRECTORY);
+            var additionals = await GetAdditionalsFromGithub(ADDITIONALS_GITHUB_TEMP_DIRECTORY);
             Log("Additional Events: " + additionals.Length);
             var exams = await GetExams(KLAUSUREN_CSV_URI);
             Log("Exam Events: " + exams.Length);
@@ -169,7 +170,7 @@ namespace Downloader
 
         private static async Task<EventEntry[]> GetAdditionals(DirectoryInfo directoryOfAdditionals)
         {
-            var addiTasks = await directoryOfAdditionals.EnumerateFiles()
+            var addiTasks = await directoryOfAdditionals.EnumerateFiles("*.json", SearchOption.AllDirectories)
                 .Select(o => JsonHelper.ConvertFromJsonAsync<AdditionalEvent[]>(o))
                 .WhenAll();
 
@@ -179,6 +180,13 @@ namespace Downloader
                 .ToArray();
 
             return addis;
+        }
+
+        private static async Task<EventEntry[]> GetAdditionalsFromGithub(DirectoryInfo directoryToCloneInto)
+        {
+            directoryToCloneInto.Delete(true);
+            Repository.Clone("https://github.com/HAWHHCalendarBot/AdditionalEvents", directoryToCloneInto.FullName);
+            return await GetAdditionals(directoryToCloneInto.CreateSubdirectory("events"));
         }
 
         private static async Task<EventEntry[]> GetExams(Uri klausurenCsvUri)

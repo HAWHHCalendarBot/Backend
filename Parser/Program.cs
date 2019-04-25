@@ -92,7 +92,7 @@ namespace Parser
         private static Userconfig[] GetUserconfigsThatNeedEventFile(Userconfig[] userconfigs, FileInfo eventFile)
         {
             return userconfigs
-                .Where(o => o.config.events.Concat(o.config.additionalEvents ?? new string[0])
+                .Where(o => o.config.events
                     .Select(EventEntry.GetFilename)
                     .Contains(eventFile.Name)
                 )
@@ -148,7 +148,7 @@ namespace Parser
 
         private static async Task<ChangedObject> GenerateCalendar(Userconfig config)
         {
-            var events = config.config.events.Concat(config.config.additionalEvents ?? new string[0]).Distinct().ToArray();
+            var events = config.config.events.Distinct().ToArray();
             var file = GetCalendarFileOfUser(config);
             return await GenerateCalendar(config.chat.first_name, file, events, config.config.changes, config.config.removedEvents);
         }
