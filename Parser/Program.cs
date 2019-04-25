@@ -40,9 +40,9 @@ namespace Parser
                 try
                 {
                     var preScan = DateTime.Now;
-                    var changedUserconfigFiles = FilesystemHelper.GetFilesChangedAfterDate(USERCONFIG_DIRECTORY, lastGeneration);
+                    var changedUserconfigFiles = FilesystemHelper.GetFilesChangedAfterDate(USERCONFIG_DIRECTORY, lastGeneration, "*.json");
                     var changedUserconfigIds = changedUserconfigFiles.Select(o => o.Name.Replace(".json", "")).Select(o => Convert.ToInt32(o));
-                    var changedEventFiles = FilesystemHelper.GetFilesChangedAfterDate(EVENT_DIRECTORY, lastGeneration);
+                    var changedEventFiles = FilesystemHelper.GetFilesChangedAfterDate(EVENT_DIRECTORY, lastGeneration, "*.json");
 
                     if (changedUserconfigFiles.Any())
                         Log(changedUserconfigFiles.ToArrayString("Userconfig Files changed"));
