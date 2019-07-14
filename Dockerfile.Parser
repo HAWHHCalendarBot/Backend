@@ -1,15 +1,23 @@
-FROM microsoft/dotnet:2-sdk
+FROM mcr.microsoft.com/dotnet/core/sdk:2.1
+ENV project Parser
 
 COPY CalendarBackendLib /app/CalendarBackendLib
 
-WORKDIR /app/Parser
-VOLUME /app/Parser/calendars
-VOLUME /app/Parser/eventfiles
-VOLUME /app/Parser/userconfig
+WORKDIR /app/${project}
 
-COPY Parser/Parser.csproj ./
+COPY ${project}/${project}.csproj ./
 RUN dotnet restore
 
-COPY Parser/ ./
-RUN dotnet publish -c Release -o out
-ENTRYPOINT ["dotnet", "out/Parser.dll"]
+COPY ${project}/ ./
+RUN dotnet publish -c Release -o /app/out
+
+
+FROM mcr.microsoft.com/dotnet/core/runtime:2.1-alpine
+WORKDIR /app
+VOLUME /app/calendars
+VOLUME /app/eventfiles
+VOLUME /app/userconfig
+
+COPY --from=0 /app/out ./
+
+ENTRYPOINT ["dotnet", "Parser.dll"]

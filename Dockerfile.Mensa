@@ -1,13 +1,21 @@
-FROM microsoft/dotnet:2-sdk
+FROM mcr.microsoft.com/dotnet/core/sdk:2.1
+ENV project Mensa
 
 COPY CalendarBackendLib /app/CalendarBackendLib
 
-WORKDIR /app/Mensa
-VOLUME /app/Mensa/meals
+WORKDIR /app/${project}
 
-COPY Mensa/Mensa.csproj ./
+COPY ${project}/${project}.csproj ./
 RUN dotnet restore
 
-COPY Mensa/ ./
-RUN dotnet publish -c Release -o out
-ENTRYPOINT ["dotnet", "out/Mensa.dll"]
+COPY ${project}/ ./
+RUN dotnet publish -c Release -o /app/out
+
+
+FROM mcr.microsoft.com/dotnet/core/runtime:2.1-alpine
+WORKDIR /app
+VOLUME /app/meals
+
+COPY --from=0 /app/out ./
+
+ENTRYPOINT ["dotnet", "Mensa.dll"]
