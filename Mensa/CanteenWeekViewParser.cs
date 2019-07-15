@@ -95,10 +95,9 @@ namespace Mensa
                 else if (PRICE_REGEX.IsMatch(line))
                 {
                     var match = PRICE_REGEX.Match(line);
-                    var numberFormat = CultureInfo.GetCultureInfo("de-DE").NumberFormat;
-                    var price1 = double.Parse(match.Groups[1].Value, numberFormat);
-                    var price2 = double.Parse(match.Groups[2].Value, numberFormat);
-                    var price3 = double.Parse(match.Groups[3].Value, numberFormat);
+                    var price1 = double.Parse(match.Groups[1].Value.Replace(",", "."));
+                    var price2 = double.Parse(match.Groups[2].Value.Replace(",", "."));
+                    var price3 = double.Parse(match.Groups[3].Value.Replace(",", "."));
                     prices = new double[] { price1, price2, price3 };
                 }
                 else if (BONUS_REGEX.IsMatch(line))
