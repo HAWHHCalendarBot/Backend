@@ -6,6 +6,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <RuntimeHostConfigurationOption Include="System.Globalization.Invariant" Value="true" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\CalendarBackendLib\CalendarBackendLib.csproj" />
   </ItemGroup>
 
