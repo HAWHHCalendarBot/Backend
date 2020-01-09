@@ -1,4 +1,4 @@
-FROM mcr.microsoft.com/dotnet/core/sdk:2.1
+FROM mcr.microsoft.com/dotnet/core/sdk:3.1
 ENV project Downloader
 
 COPY CalendarBackendLib /app/CalendarBackendLib
@@ -12,7 +12,7 @@ COPY ${project}/ ./
 RUN dotnet publish -c Release -o /app/out
 
 
-FROM mcr.microsoft.com/dotnet/core/runtime:2.1-alpine
+FROM mcr.microsoft.com/dotnet/core/runtime:3.1-alpine
 WORKDIR /app
 VOLUME /app/eventfiles
 
