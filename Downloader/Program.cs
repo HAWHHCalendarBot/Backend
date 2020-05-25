@@ -1,4 +1,4 @@
-using CalendarBackendLib;
+﻿using CalendarBackendLib;
 using LibGit2Sharp;
 using System;
 using System.Collections.Generic;
@@ -15,7 +15,7 @@ namespace Downloader
     {
         private static readonly Uri[] SOURCE_URIS = new string[] {
             "https://userdoc.informatik.haw-hamburg.de/doku.php?id=stundenplan:ics_public",
-            "https://www.haw-hamburg.de/ti-ie/studium/kalenderdateien.html"
+            "https://www.haw-hamburg.de/studium/studiengaenge-a-z/studiengaenge-detail/course/courses/show/elektrotechnik-und-informationstechnik/Studierende/"
         }.Select(o => new Uri(o)).ToArray();
 
         private static readonly Uri INFORMATIK_TXT_URI = new Uri("https://www.haw-hamburg.de/fileadmin/user_upload/TI-I/Studium/Veranstaltungsplaene/Sem_I.txt");
