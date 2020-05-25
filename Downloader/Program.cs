@@ -1,4 +1,4 @@
-﻿using CalendarBackendLib;
+using CalendarBackendLib;
 using LibGit2Sharp;
 using System;
 using System.Collections.Generic;
@@ -135,7 +135,7 @@ namespace Downloader
 
         private static async Task<EventEntry[]> GetIcsEvents(IEnumerable<Uri> baseUriList)
         {
-            var uris = await GetEventFileUrisFromBaseUriList(SOURCE_URIS);
+            var uris = await GetEventFileUrisFromBaseUriList(baseUriList);
             uris = uris.ToArray();
             Log("got list of ics uris: " + uris.Length);
 
