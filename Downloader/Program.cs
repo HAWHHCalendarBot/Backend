@@ -184,7 +184,9 @@ namespace Downloader
 
         private static async Task<EventEntry[]> GetAdditionalsFromGithub(DirectoryInfo directoryToCloneInto)
         {
-            directoryToCloneInto.Delete(true);
+            try {
+                directoryToCloneInto.Delete(true);
+            } catch {}
             Repository.Clone("https://github.com/HAWHHCalendarBot/AdditionalEvents", directoryToCloneInto.FullName);
             return await GetAdditionals(directoryToCloneInto.CreateSubdirectory("events"));
         }
