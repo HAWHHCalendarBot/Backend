@@ -131,6 +131,8 @@ namespace Downloader
             var eventFileList = FilesystemHelper.GenerateFileInfo(EVENT_DIRECTORY, "all.txt");
             await FilesystemHelper.WriteAllTextAsyncOnlyWhenChanged(eventFileList, eventList);
             Log("Saved Event list");
+
+            await File.WriteAllTextAsync("last-successful-run", DateTime.Now.ToString());
         }
 
         private static async Task<EventEntry[]> GetIcsEvents(IEnumerable<Uri> baseUriList)

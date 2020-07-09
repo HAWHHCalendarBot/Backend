@@ -19,6 +19,11 @@ WORKDIR /app
 VOLUME /app/additionalEventsGithub
 VOLUME /app/eventfiles
 
+RUN bash -c 'echo "bash exists"'
+
+HEALTHCHECK --interval=5m \
+    CMD bash -c '[[ $(find . -maxdepth 1 -name "last-successful-run" -newermt "250 min ago" -ls | wc -l) == "1" ]]'
+
 COPY --from=0 /app/out ./
 
 ENTRYPOINT ["dotnet", "Downloader.dll"]
