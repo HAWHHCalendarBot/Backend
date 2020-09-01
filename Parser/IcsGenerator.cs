@@ -62,8 +62,8 @@ END:VCALENDAR
             content.Add("STATUS", e.Status.ToString().ToUpper());
 
             content.Add("SUMMARY", name);
-            content.Add("DTSTART;TZID=Europe/Berlin", e.StartTime.ToString(icsDateTimeFormat));
-            content.Add("DTEND;TZID=Europe/Berlin", e.EndTime.ToString(icsDateTimeFormat));
+            content.Add("DTSTART;TZID=Europe/Berlin", e.StartDateTime.ToString(icsDateTimeFormat));
+            content.Add("DTEND;TZID=Europe/Berlin", e.EndDateTime.ToString(icsDateTimeFormat));
 
             if (!string.IsNullOrWhiteSpace(e.Location))
                 content.Add("LOCATION", e.Location.Replace(",", "\\,")); // , has to be escaped in the LOCATION field
@@ -83,10 +83,10 @@ END:VCALENDAR
             //TODO: this changes every time it generates
             var nameHash = StringToHexHash(e.Name);
 
-            var dateHash = e.StartTime.Date.GetHashCode().ToString("x");
+            var dateHash = e.StartDateTime.Date.GetHashCode().ToString("x");
 
-            var startHash = DoubleToHex(e.StartTime.TimeOfDay.TotalMinutes);
-            var endHash = DoubleToHex(e.EndTime.TimeOfDay.TotalMinutes);
+            var startHash = DoubleToHex(e.StartDateTime.TimeOfDay.TotalMinutes);
+            var endHash = DoubleToHex(e.EndDateTime.TimeOfDay.TotalMinutes);
 
             var locationHash = StringToHexHash(e.Location);
             var descriptionHash = StringToHexHash(e.Description);

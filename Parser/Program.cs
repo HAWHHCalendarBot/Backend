@@ -187,7 +187,7 @@ namespace Parser
             var result = events
                .Select(e =>
                 {
-                    var changeOfEvent = modifyChanges.SingleOrDefault(o => o.name == e.Name && o.DateParsed == e.StartTime);
+                    var changeOfEvent = modifyChanges.SingleOrDefault(o => o.name == e.Name && o.DateParsed == e.StartDateTime);
                     return ApplyChange(e, changeOfEvent, removedEvents);
                 })
                 .Concat(additionalEvents)
@@ -256,11 +256,11 @@ namespace Parser
 
             if (!string.IsNullOrWhiteSpace(change.starttime))
             {
-                changedEvent.StartTime = original.StartTime.Date.Add(TimeSpan.Parse(change.starttime));
+                changedEvent.StartTime = original.StartDateTime.Date.Add(TimeSpan.Parse(change.starttime)).ToString("yyyy-MM-ddTHH\\:mm\\:sszzz");
             }
             if (!string.IsNullOrWhiteSpace(change.endtime))
             {
-                changedEvent.EndTime = original.EndTime.Date.Add(TimeSpan.Parse(change.endtime));
+                changedEvent.EndTime = original.EndDateTime.Date.Add(TimeSpan.Parse(change.endtime)).ToString("yyyy-MM-ddTHH\\:mm\\:sszzz");
             }
 
             return changedEvent;
