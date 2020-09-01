@@ -18,6 +18,10 @@ VOLUME /app/calendars
 VOLUME /app/eventfiles
 VOLUME /app/userconfig
 
+ENV TZ=Europe/Berlin
+
+RUN apk --no-cache add tzdata
+
 COPY --from=0 /app/out ./
 
 ENTRYPOINT ["dotnet", "Parser.dll"]
